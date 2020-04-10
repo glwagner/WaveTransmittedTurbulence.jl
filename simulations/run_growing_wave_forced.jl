@@ -48,7 +48,12 @@ args = parse_command_line_arguments()
 # # Set up simulation from spinup state
 spinup_name = args["spinup"]
 
-filepath = joinpath(@__DIR__, "..", "data", spinup_name, spinup_name * "_fields.jld2")
+# Pick last file.
+spinup_directory = joinpath(@__DIR__, "..", "data", spinup_name)
+filenames = glob(spinup_directory "./*")
+sortby(name) = parse(Int, name[length(spinup_name)+13:end])
+sort!(filenames, by=sortby, rev=true)
+filepath = joinpath(@__DIR__, "..", "data", spinup_name, filenames[1])
 
 # Grid
 grid = get_grid(filepath)

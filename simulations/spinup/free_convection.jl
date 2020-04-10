@@ -2,14 +2,16 @@ using WaveTransmittedTurbulence
 
 using 
     Oceananigans, 
+    Oceananigans.Diagnostics, 
     Oceananigans.OutputWriters, 
     Oceananigans.Coriolis, 
     Oceananigans.BoundaryConditions, 
     Oceananigans.Forcing, 
+    Oceananigans.Utils, 
     Oceananigans.TurbulenceClosures, 
     Oceananigans.Buoyancy
 
-using Random, Printf, Statistics, CUDAapi
+using Random, Printf, Statistics
 
 @hascuda select_device!(2)
 

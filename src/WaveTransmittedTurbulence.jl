@@ -24,7 +24,6 @@ export
     save_global!,
     print_banner,
     prefix_tuple_names,
-    SurfaceFluxDiffusivityBoundaryConditions,
 
     # files.jl
     get_iters,
@@ -33,12 +32,19 @@ export
     get_wind_stress,
     get_surface_wave_parameters,
     get_parameter,
+    set_from_file!,
 
     # les.jl
     SurfaceEnhancedModelConstant,
+    SurfaceFluxDiffusivityBoundaryConditions,
+    save_closure_parameters!,
 
     # progress_messenger.jl
     SimulationProgressMessenger,
+
+    # stokes_drift.jl
+    GrowingStokesDrift,
+    EffectiveStressGrowingStokesDrift,
     
     # reexport from Oceananigans / CUDAapi
     @hascuda,
@@ -49,6 +55,7 @@ using OffsetArrays, JLD2, Printf
 using Oceananigans,
       Oceananigans.AbstractOperations,
       Oceananigans.BoundaryConditions,
+      Oceananigans.TurbulenceClosures,
       Oceananigans.Diagnostics,
       Oceananigans.Fields,
       Oceananigans.Operators,
@@ -56,6 +63,10 @@ using Oceananigans,
       Oceananigans.Utils
 
 using Oceananigans.Architectures: device
+
+using Oceananigans.SurfaceWaves: UniformStokesDrift
+
+using Oceananigans.Buoyancy: g_Earth
 
 using Oceananigans: @hascuda, Face, Cell
 
@@ -87,12 +98,14 @@ end
     end
 end
 
+include("utils.jl")
 include("output.jl")
 include("forcing.jl")
 include("files.jl")
-include("setup.jl")
 include("les.jl")
 include("progress_messenger.jl")
+
+include("stokes_drift.jl")
 
 @haspyplot include("plotting.jl")
 

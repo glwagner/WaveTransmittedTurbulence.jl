@@ -17,7 +17,7 @@ SimulationProgressMessenger(model, Δt) =
                       FieldMaximum(abs, model.velocities.v),
                       FieldMaximum(abs, model.velocities.w),
                       FieldMaximum(abs, model.diffusivities.νₑ),
-                      FieldMaximum(abs, model.diffusivities.κₑ.T),
+                      FieldMaximum(abs, model.diffusivities.κₑ.b),
                       AdvectiveCFL(Δt),
                       DiffusiveCFL(Δt),
                       Δt

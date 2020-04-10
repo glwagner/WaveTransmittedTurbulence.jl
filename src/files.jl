@@ -71,3 +71,28 @@ function get_parameter(filename, group, parameter_name)
 
     return parameter
 end
+
+function set_from_file!(model, filename; i=nothing)
+
+    file = jldopen(filename)
+
+    # Load initial condition from file
+    iter = i === nothing ? parse(Int, keys(file["timeseries/t"])[end]) :
+                           parse(Int, keys(file["timeseries/t"])[i])
+    
+    u₀ = file["timeseries/u/$iter"]
+    v₀ = file["timeseries/v/$iter"]
+    w₀ = file["timeseries/w/$iter"]
+    b₀ = file["timeseries/b/$iter"]
+    
+    close(file)
+
+    array_type = typeof(model.velocities.u.data.parent)
+
+    # Set initial condition
+    model.velocities.u.data.parent .= array_type(u₀)
+    model.velocities.v.data.parent .= array_type(v₀)
+    model.velocities.w.data.parent .= array_type(w₀)
+    model.tracers.b.data.parent .= array_type(b₀)
+
+end

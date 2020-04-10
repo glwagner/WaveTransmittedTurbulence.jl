@@ -76,14 +76,6 @@ grid = RegularCartesianGrid(size=(Nh, Nh, Nz), x=(0, Lh), y=(0, Lh), z=(-Lz, 0))
 
 stop_time = 4π / f
 
-# # Buoyancy, equation of state, temperature flux, and initial temperature gradient
-
-buoyancy = SeawaterBuoyancy(equation_of_state=LinearEquationOfState(α=2e-4), constant_salinity=35.0)
-
-   Qᶿ = Qᵇ / (buoyancy.gravitational_acceleration * buoyancy.equation_of_state.α)
-dθdz₀ = N² / (buoyancy.gravitational_acceleration * buoyancy.equation_of_state.α)
- dθdz = dθdz₀
-
 # # Near-wall LES diffusivity modification + temperature flux specification
 
 # Wall-aware AMD model constant
@@ -93,10 +85,10 @@ Cᴬᴹᴰ = SurfaceEnhancedModelConstant(Δz, C₀=1/12, enhancement=2, decay_s
 κₑ_bcs = SurfaceFluxDiffusivityBoundaryConditions(grid, Qᵇ; Cʷ=0.1)
 
 κ₀ = κₑ_bcs.z.top.condition # surface diffusivity
-dθdz_surface = - Qᶿ / κ₀    # set temperature gradient = - flux / diffusivity
+dbdz_surface = - Qᵇ / κ₀    # set temperature gradient = - flux / diffusivity
 
-θ_bcs = TracerBoundaryConditions(grid, top = BoundaryCondition(Gradient, dθdz_surface),
-                                       bottom = BoundaryCondition(Gradient, dθdz₀))
+b_bcs = TracerBoundaryConditions(grid, top = BoundaryCondition(Gradient, dbdz_surface),
+                                       bottom = BoundaryCondition(Gradient, N²))
 
 # # Sponge layer
 
@@ -106,7 +98,7 @@ dθdz_surface = - Qᶿ / κ₀    # set temperature gradient = - flux / diffusiv
 u_forcing = ParameterizedForcing(Fu, (δ=δ, τ=τ))
 v_forcing = ParameterizedForcing(Fv, (δ=δ, τ=τ))
 w_forcing = ParameterizedForcing(Fw, (δ=δ, τ=τ))
-θ_forcing = ParameterizedForcing(Fθ, (δ=δ, τ=τ, dθdz=dθdz₀, θ₀=θ₀))
+b_forcing = ParameterizedForcing(Fb, (δ=δ, τ=τ, dbdz=N²))
 
 # # Model instantiation, initial condition, and model run
 
@@ -114,31 +106,29 @@ prefix = @sprintf("free_convection_Qb%.1e_Nsq%.1e_Nh%d_Nz%d", Qᵇ, N², Nh, Nz)
 
 model = IncompressibleModel(       architecture = has_cuda() ? GPU() : CPU(),
                                            grid = grid,
-                                        tracers = :T,
-                                       buoyancy = buoyancy,
+                                        tracers = :b,
+                                       buoyancy = BuoyancyTracer(),
                                        coriolis = FPlane(f=f),
                                         closure = AnisotropicMinimumDissipation(C=Cᴬᴹᴰ),
-                            boundary_conditions = (T=θ_bcs, κₑ=(T=κₑ_bcs,)),
-                                        forcing = ModelForcing(u=u_forcing, v=v_forcing, w=w_forcing, T=θ_forcing)
+                            boundary_conditions = (b=b_bcs, κₑ=(b=κₑ_bcs,)),
+                                        forcing = ModelForcing(u=u_forcing, v=v_forcing, w=w_forcing, b=b_forcing)
                            )
 
 # Initial condition
-ε₀, Δθ, w★ = 1e-6, dθdz₀ * Lz, (Qᵇ * Lz)^(1/3)
+ε₀, Δb, w★ = 1e-6, N² * Lz, (Qᵇ * Lz)^(1/3)
 Ξ(ε₀, z) = ε₀ * randn() * z / Lz * exp(4z / Lz) # noise
-θᵢ(x, y, z) = θ₀ + dθdz₀ * z + Ξ(ε₀ * Δθ, z)
+bᵢ(x, y, z) = N² * z + Ξ(ε₀ * Δb, z)
 uᵢ(x, y, z) = Ξ(ε₀ * w★, z)
 
-Oceananigans.set!(model, T=θᵢ, u=uᵢ, v=uᵢ, w=uᵢ)
+Oceananigans.set!(model, b=bᵢ, u=uᵢ, v=uᵢ, w=uᵢ)
 
 "Save a few things that we might want when we analyze the data."
 function init(file, model; kwargs...)
     file["sponge_layer/δ"] = δ
     file["sponge_layer/τ"] = τ
-    file["initial_conditions/dθdz"] = dθdz
     file["initial_conditions/N²"] = N²
-    file["initial_conditions/θ₀"] = θ₀
     file["boundary_conditions/Qᵇ"] = Qᵇ
-    file["boundary_conditions/Qᶿ"] = Qᶿ
+    save_closure_parameters!(file, model.closure)
     return nothing
 end
 

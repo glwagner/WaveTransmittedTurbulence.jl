@@ -35,12 +35,6 @@ function print_banner(simulation)
     return nothing
 end
 
-function SurfaceFluxDiffusivityBoundaryConditions(grid, Qᵇ; Cʷ=0.1)
-    w★ = (Qᵇ * grid.Lz)^(1/3) # surface turbulent velocity scaling
-    κ₀ = Cʷ * grid.Δz * w★
-    return DiffusivityBoundaryConditions(grid, top = BoundaryCondition(Value, κ₀))
-end
-
 function prefix_tuple_names(prefix, tup)
     new_keys = (Symbol(prefix, :_, key) for key in keys(tup))
     return (; zip(new_keys, values(tup))...)

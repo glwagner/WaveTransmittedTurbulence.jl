@@ -31,7 +31,7 @@ function parse_command_line_arguments()
                       A positive buoyancy flux implies cooling."""
             default = 1e-9
 
-        "--buoyancy_gradient", "-Q"
+        "--buoyancy_gradient",
             help = """The buoyancy gradient, or the square of the Brunt-Vaisala frequency N²,
                       at the start of the simulation in units s⁻²."""
             default = 1e-5

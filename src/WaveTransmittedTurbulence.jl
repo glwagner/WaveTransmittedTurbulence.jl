@@ -44,7 +44,7 @@ export
     @hascuda,
     has_cuda
 
-using PyPlot, OffsetArrays, JLD2, Printf
+using OffsetArrays, JLD2, Printf
 
 using Oceananigans,
       Oceananigans.AbstractOperations,
@@ -65,6 +65,17 @@ using CUDAapi: has_cuda
 
 function select_device! end
 
+try
+    using PyPlot
+    withplots = true
+catch
+    withplots = false
+end
+
+macro haspyplot(expr)
+    return withplots ? :($(esc(expr))) : :(nothing)
+end
+
 @hascuda begin
     using CUDAnative, CUDAdrv
 
@@ -76,12 +87,12 @@ function select_device! end
 end
 
 include("output.jl")
-include("plotting.jl")
 include("forcing.jl")
 include("files.jl")
 include("setup.jl")
 include("les.jl")
-
 include("progress_messenger.jl")
+
+@haspyplot include("plotting.jl")
 
 end # module

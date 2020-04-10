@@ -15,9 +15,9 @@ using Random, Printf, Statistics, ArgParse
 
 "Returns a dictionary of command line arguments."
 function parse_command_line_arguments()
-    s = ArgParseSettings()
+    settings = ArgParseSettings()
 
-    @add_arg_table! s begin
+    @add_arg_table! settings begin
         "--Nh"
             help = "The number of grid points in x, y."
             default = 32
@@ -31,7 +31,7 @@ function parse_command_line_arguments()
                       A positive buoyancy flux implies cooling."""
             default = 1e-9
 
-        "--buoyancy_gradient",
+        "--buoyancy_gradient"
             help = """The buoyancy gradient, or the square of the Brunt-Vaisala frequency N²,
                       at the start of the simulation in units s⁻²."""
             default = 1e-5
@@ -41,7 +41,7 @@ function parse_command_line_arguments()
             default = 0
     end
 
-    return parse_args(s)
+    return parse_args(settings)
 end
 
 args = parse_command_line_arguments()

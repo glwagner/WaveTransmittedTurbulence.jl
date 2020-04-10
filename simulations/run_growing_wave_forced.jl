@@ -23,6 +23,15 @@ function parse_command_line_arguments()
             default = "free_convection_Qb1.0e-09_Nsq1.0e-05_Nh32_Nz32"
             arg_type = String
 
+        "--case"
+            help = """The case to run. The options are:
+                   1. "growing_waves"
+                   2. "surface_stress_no_waves"
+                   3. "surface_stress_with_waves"
+                   """
+            default = "growing_waves"
+            arg_type = String
+
         "--device", "-d"
             help = "The CUDA device index on which to run the simulation."
             default = 0
@@ -35,14 +44,7 @@ end
 args = parse_command_line_arguments()
 
 @hascuda select_device!(args["device"])
-
-# # Stokes drift parameters
-stokes_drift = GrowingStokesDrift(
-                                        wave_number = 2π / 100, 
-                                     wave_amplitude = 1.5, 
-                                  growth_time_scale = 4hour
-                                 )
-
+ 
 # # Set up simulation from spinup state
 spinup_name = args["spinup"]
 
@@ -51,6 +53,41 @@ filepath = joinpath(@__DIR__, "..", "..", "data", spinup_name, spinup_name * "_f
 # Grid
 grid = get_grid(filepath)
 
+# # Stokes drift parameters
+      wave_number = 2π / 100
+   wave_amplitude = 1.5
+growth_time_scale = 4hour
+
+case = args["case"]
+
+if case === "growing_waves"
+
+    stokes_drift = GrowingStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude,
+                                      growth_time_scale=growth_time_scale)
+
+    u_bcs = UVelocityBoundaryConditions(grid) # default
+
+elseif case == "surface_stress_no_waves"
+
+    stokes_drift = nothing
+
+    Qᵘ = EffectiveStressGrowingStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude,
+                                           growth_time_scale=growth_time_scale)
+
+    u_bcs = UVelocityBoundaryConditions(grid, top = BoundaryCondition(Flux, Qᵘ)) # default
+
+elseif case == "surface_stress_with_waves"
+
+    stokes_drift = SteadyStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude,
+                                     growth_time_scale=growth_time_scale)
+
+    Qᵘ = EffectiveStressGrowingStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude,
+                                           growth_time_scale=growth_time_scale)
+
+    u_bcs = UVelocityBoundaryConditions(grid, top = BoundaryCondition(Flux, Qᵘ)) # default
+
+end
+   
 # Boundary conditions
 N² = get_parameter(filepath, "initial_conditions", "N²")
 
@@ -79,7 +116,7 @@ model = IncompressibleModel(       architecture = has_cuda() ? GPU() : CPU(),
                                        coriolis = FPlane(f=f),
                                   surface_waves = stokes_drift,
                                         closure = AnisotropicMinimumDissipation(C=Cᴬᴹᴰ),
-                            boundary_conditions = (b=b_bcs,),
+                            boundary_conditions = (b=b_bcs, u=u_bcs),
                                         forcing = ModelForcing(u=u_forcing, v=v_forcing, w=w_forcing, b=b_forcing)
                            )
 
@@ -107,7 +144,7 @@ prefix = @sprintf("growing_wave_forced_a%.1f_k%.1e_T%.1f_Nh%d_Nz%d",
                   stokes_drift.∂z_uˢ.growth_time_scale / hour,
                   model.grid.Nx, model.grid.Nz)
 
-data_directory = joinpath(@__DIR__, "..", "..", "data", prefix) # save data in /data/prefix
+data_directory = joinpath(@__DIR__, "..", "data", prefix) # save data in /data/prefix
 
 "Save a few things that we might want when we analyze the data."
 function init(file, model; kwargs...)

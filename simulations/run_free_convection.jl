@@ -146,7 +146,7 @@ simulation = Simulation(model, Δt=wizard, stop_time=stop_time, progress_frequen
 
 # # Output
 
-data_directory = joinpath(@__DIR__, "..", "..", "data", prefix) # save data in /data/prefix
+data_directory = joinpath(@__DIR__, "..", "data", prefix) # save data in /data/prefix
 
 # Three-dimensional field output
 fields_to_output = merge(model.velocities, model.tracers, (νₑ=model.diffusivities.νₑ,),

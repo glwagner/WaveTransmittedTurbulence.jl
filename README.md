@@ -31,6 +31,12 @@ and
 julia --project simulations/spinup/run_free_convection.jl --buoyancy_flux 1e-8 --Nh 256 --Nz 256
 ```
 
+Additional command line arguments are revealed by typing
+
+```
+julia --project simulations/spinup/run_free_convection.jl --help
+```
+
 ### Turbulence and near-inertial waves griven by gradual surface wave growth
 
 ## Simulations in section 4

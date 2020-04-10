@@ -65,12 +65,12 @@ using CUDAapi: has_cuda
 
 function select_device! end
 
+withplots = false
+
 try
     using PyPlot
     withplots = true
-catch
-    withplots = false
-end
+catch; end
 
 macro haspyplot(expr)
     return withplots ? :($(esc(expr))) : :(nothing)

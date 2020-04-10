@@ -130,13 +130,15 @@ uᵢ(x, y, z) = Ξ(ε₀ * w★, z)
 
 Oceananigans.set!(model, T=θᵢ, u=uᵢ, v=uᵢ, w=uᵢ)
 
+"Save a few things that we might want when we analyze the data."
 function init(file, model; kwargs...)
-    save_global!(file, "sponge_layer", :δ)
-    save_global!(file, "sponge_layer", :τ)
-    save_global!(file, "initial_conditions", :dθdz)
-    save_global!(file, "initial_conditions", :θ₀)
-    save_global!(file, "boundary_conditions", :Qᵇ)
-    save_global!(file, "boundary_conditions", :Qᶿ)
+    file["sponge_layer/δ"] = δ
+    file["sponge_layer/τ"] = τ
+    file["initial_conditions/dθdz"] = dθdz
+    file["initial_conditions/N²"] = N²
+    file["initial_conditions/θ₀"] = θ₀
+    file["boundary_conditions/Qᵇ"] = Qᵇ
+    file["boundary_conditions/Qᶿ"] = Qᶿ
     return nothing
 end
 

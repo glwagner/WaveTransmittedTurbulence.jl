@@ -151,10 +151,7 @@ function output_writers!(model, prefix)
       ϵʷ = HorizontalAverage(ϵʷ, scratch)
 
       averages = ( 
-                  #w∇p = model ->  w∇p(model),
                    W³ = model ->   W³(model),
-                 #wτ₃₃ = model -> wτ₃₃(model),
-                   #ϵʷ = model ->   ϵʷ(model),
                 
                     U = model -> U(model),
                     V = model -> V(model),

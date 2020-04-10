@@ -1,5 +1,3 @@
-using JLD2, Oceananigans.Grids
-
 function get_iters(filename)
     file = jldopen(filename)
     iters = parse.(Int, keys(file["timeseries/t"]))
@@ -73,5 +71,3 @@ function get_parameter(filename, group, parameter_name)
 
     return parameter
 end
-
-

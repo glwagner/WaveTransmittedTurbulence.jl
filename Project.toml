@@ -1,0 +1,4 @@
+name = "WaveTransmittedTurbulence"
+uuid = "55eb135a-9a08-4ed1-a1ee-65dd8ab87284"
+authors = ["Gregory Wagner <wagner.greg@gmail.com>"]
+version = "0.1.0"

@@ -21,13 +21,21 @@ function parse_command_line_arguments()
         "--Nh"
             help = "The number of grid points in x, y."
             default = 32
+
         "--Nz"
             help = "The number of grid points in z."
             default = 32
+
         "--buoyancy_flux", "-Q"
             help = """The surface buoyancy flux that drives convection in units of m² s⁻³. 
                       A positive buoyancy flux implies cooling."""
             default = 1e-9
+
+        "--buoyancy_gradient", "-Q"
+            help = """The buoyancy gradient, or the square of the Brunt-Vaisala frequency N²,
+                      at the start of the simulation in units s⁻²."""
+            default = 1e-5
+
         "--device", "-d"
             help = "The CUDA device index on which to run the simulation."
             default = 0
@@ -43,13 +51,13 @@ args = parse_command_line_arguments()
 # # Set numerical and physical parameters
 
 # These parameters are set on the command line.
-Nh = args["Nh"]            # Number of grid points in x, y
-Nz = args["Nz"]            # Number of grid points in z
-Qᵇ = args["buoyancy_flux"] # [m² s⁻³] Buoyancy flux at surface
+Nh = args["Nh"]                # Number of grid points in x, y
+Nz = args["Nz"]                # Number of grid points in z
+Qᵇ = args["buoyancy_flux"]     # [m² s⁻³] Buoyancy flux at surface
+N² = args["buoyancy_gradient"] # [s⁻²] Initial buoyancy gradient
 
 Lh = 128                   # [m] Grid spacing in x, y (meters)
 Lz = 64                    # [m] Grid spacing in z (meters)
-N² = 1e-5                  # [s⁻²] Initial buoyancy gradient
 θ₀ = 20.0                  # [ᵒC] Surface temperature
  f = 1e-4                  # [s⁻¹] Coriolis parameter
 

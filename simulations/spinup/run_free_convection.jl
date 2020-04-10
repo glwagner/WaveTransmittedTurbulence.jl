@@ -21,24 +21,29 @@ function parse_command_line_arguments()
         "--Nh"
             help = "The number of grid points in x, y."
             default = 32
+            arg_type = Int
 
         "--Nz"
             help = "The number of grid points in z."
             default = 32
+            arg_type = Int
 
         "--buoyancy_flux", "-Q"
             help = """The surface buoyancy flux that drives convection in units of m² s⁻³. 
                       A positive buoyancy flux implies cooling."""
             default = 1e-9
+            arg_type = Float64
 
         "--buoyancy_gradient"
             help = """The buoyancy gradient, or the square of the Brunt-Vaisala frequency N²,
                       at the start of the simulation in units s⁻²."""
             default = 1e-5
+            arg_type = Float64
 
         "--device", "-d"
             help = "The CUDA device index on which to run the simulation."
             default = 0
+            arg_type = Int
     end
 
     return parse_args(settings)

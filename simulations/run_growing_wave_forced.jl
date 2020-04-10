@@ -48,11 +48,13 @@ args = parse_command_line_arguments()
 # # Set up simulation from spinup state
 spinup_name = args["spinup"]
 
-# Pick last file.
 spinup_directory = joinpath(@__DIR__, "..", "data", spinup_name)
-filenames = glob(spinup_directory "./*")
-sortby(name) = parse(Int, name[length(spinup_name)+13:end])
+
+# Pick last spinup file:
+filenames = cd(() -> glob("*fields*"), spinup_directory)
+sortby(filename) = parse(Int, filename[length(spinup_name)+13:end-5])
 sort!(filenames, by=sortby, rev=true)
+
 filepath = joinpath(@__DIR__, "..", "data", spinup_name, filenames[1])
 
 # Grid
@@ -167,7 +169,7 @@ fields_to_output = merge(model.velocities, model.tracers, (νₑ=model.diffusivi
                          prefix_tuple_names(:κₑ, model.diffusivities.κₑ))
 
 field_writer = JLD2OutputWriter(model, FieldOutputs(fields_to_output); force=true, init=init,
-                                    interval = π / 2f # every quarter period
+                                    interval = π / 2f, # every quarter period
                                 max_filesize = 2GiB,
                                          dir = data_directory,
                                       prefix = prefix * "_fields")

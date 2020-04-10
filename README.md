@@ -4,7 +4,7 @@ Tools, setups, run scripts, and visualization scripts for reproducing the simula
 
 > Wagner et al., "Near inertial waves and turbulence driven by the growth of surface waves", _submitted to JPO in April 2020_
 
-# Reproduction guide
+# Reproduction of large eddy simulation results
 
 To reproduce all the publication's LES data (on a Unix-like system):
 

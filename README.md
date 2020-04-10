@@ -8,7 +8,7 @@ Tools, setups, run scripts, and visualization scripts for reproducing results in
 
 ### Spinup
 
-To run a large eddy simulation of free convection on a CPU, or a GPU if one is available, type
+To run a large eddy simulation of free convection, type
 
 ```
 julia --project simulations/spinup/run_free_convection.jl

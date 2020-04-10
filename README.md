@@ -1,10 +1,14 @@
 # WaveTransmittedTurbulence
 
-Tools, setups, run scripts, and visualization scripts for reproducing the simulation data and plots in 
+[Julia](https://julialang.org) code reproducing the simulation data and plots in 
 
 > Wagner et al., "Near inertial waves and turbulence driven by the growth of surface waves", _submitted to JPO in April 2020_
 
+All software in this repository is written in julia. The plots are produced with `PyPlot`, a julia wrapper for the python package `matplotlib`.
+
 # Reproduction of large eddy simulation results
+
+The large eddy simulation (LES) data in the above publication was generated using the julia code [Oceananigans.jl](https://github.com/climate-machine/Oceananigans.jl).
 
 To reproduce all the publication's LES data (on a Unix-like system):
 

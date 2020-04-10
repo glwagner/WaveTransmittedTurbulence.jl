@@ -38,7 +38,7 @@ export
     SurfaceEnhancedModelConstant,
 
     # progress_messenger.jl
-    ProgressMessenger,
+    SimulationProgressMessenger,
     
     # reexport
     @hascuda,

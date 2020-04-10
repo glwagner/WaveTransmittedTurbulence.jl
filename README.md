@@ -53,4 +53,4 @@ To make more substantial changes to the setup, edit the script `simulations/run_
 
 # Corresponding
 
-Feel free to raise an issue here or contact the corresponding author, Gregory Wagner, at `gregory.leclaire.wagner@gmail.com`.
+Feel free to raise an issue here or contact the corresponding author (Greg) at `gregory.leclaire.wagner@gmail.com`.

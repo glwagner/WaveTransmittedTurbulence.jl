@@ -40,7 +40,7 @@ export
     # progress_messenger.jl
     SimulationProgressMessenger,
     
-    # reexport
+    # reexport from Oceananigans / CUDAapi
     @hascuda,
     has_cuda
 
@@ -63,14 +63,15 @@ using GPUifyLoops: @loop, @launch
 
 using CUDAapi: has_cuda
 
-function select_device! end
-
+# Don't try to load PyPlot when we don't have a working python.
 withplots = false
 
+#=
 try
     using PyPlot
     withplots = true
 catch; end
+=#
 
 macro haspyplot(expr)
     return withplots ? :($(esc(expr))) : :(nothing)

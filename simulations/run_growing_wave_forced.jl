@@ -145,7 +145,8 @@ simulation = Simulation(model, Δt=wizard, stop_time=stop_time, progress_frequen
 
 # # Specify output
 
-prefix = @sprintf("growing_wave_forced_a%.1f_k%.1e_T%.1f_Nh%d_Nz%d", 
+prefix = @sprintf("growing_wave_forced_Qb%.1e_a%.1f_k%.1e_T%.1f_Nh%d_Nz%d",
+                  get_parameter(filepath, "boundary_conditions", "Qᵇ"),
                   stokes_drift.∂z_uˢ.wave_amplitude,
                   stokes_drift.∂z_uˢ.wave_number,
                   stokes_drift.∂z_uˢ.growth_time_scale / hour,

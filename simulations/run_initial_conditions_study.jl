@@ -98,8 +98,8 @@ end
 
 # # Set up sponge layer
 
-τ = 10       # [s] sponge layer damping time-scale
-δ = 6.0      # [m] sponge layer width
+τ = 60       # [s] sponge layer damping time-scale
+δ = 8        # [m] sponge layer width
 
 u_forcing = ParameterizedForcing(Fu, (δ=δ, τ=τ))
 v_forcing = ParameterizedForcing(Fv, (δ=δ, τ=τ))

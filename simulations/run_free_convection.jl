@@ -80,9 +80,9 @@ stop_time = 4π / f
 
 # Wall-aware AMD model constant
 Δz = Lz/Nz
-Cᴬᴹᴰ = SurfaceEnhancedModelConstant(Δz, C₀=1/12, enhancement=2, decay_scale=8Δz)
+Cᴬᴹᴰ = SurfaceEnhancedModelConstant(Δz, C₀=1/12, enhancement=7, decay_scale=8Δz)
 
-κₑ_bcs = SurfaceFluxDiffusivityBoundaryConditions(grid, Qᵇ; Cʷ=0.1)
+κₑ_bcs = SurfaceFluxDiffusivityBoundaryConditions(grid, Qᵇ; Cʷ=1.0)
 
 κ₀ = κₑ_bcs.z.top.condition # surface diffusivity
 dbdz_surface = - Qᵇ / κ₀    # set temperature gradient = - flux / diffusivity
@@ -92,8 +92,8 @@ b_bcs = TracerBoundaryConditions(grid, top = BoundaryCondition(Gradient, dbdz_su
 
 # # Sponge layer
 
-δ = 8   # [m] Sponge layer width
 τ = 60  # [s] Sponge layer damping time-scale
+δ = 8   # [m] Sponge layer width
 
 u_forcing = ParameterizedForcing(Fu, (δ=δ, τ=τ))
 v_forcing = ParameterizedForcing(Fv, (δ=δ, τ=τ))

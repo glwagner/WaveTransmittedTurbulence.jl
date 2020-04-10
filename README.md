@@ -9,7 +9,7 @@ Tools, setups, run scripts, and visualization scripts for reproducing the simula
 To reproduce all the publication's LES data (on a Unix-like system):
 
 1. Clone the repository and change into its directory: `git clone https://github.com/glwagner/WaveTransmittedTurbulence.git; cd WaveTransmittedTurbulence`
-2. Instantiate the environment: `julia --project -e 'Pkg.instantiate()`
+2. Instantiate the environment: `julia --project -e 'using Pkg; Pkg.instantiate()`
 3. Run the spinup simulations for section 3 (this will take some time with a high-octane GPU):
 
   * `julia --project simulations/run_free_convection.jl --buoyancy_flux 1e-9 --Nh 256 --Nz 256`

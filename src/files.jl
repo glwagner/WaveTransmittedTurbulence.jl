@@ -32,12 +32,27 @@ function get_fields(filename, i)
     v = file["timeseries/v/$i"]
     w = file["timeseries/w/$i"]
     b = file["timeseries/b/$i"]
-    νₑ = file["timeseries/νₑ/$i"]
-    κₑ = file["timeseries/κₑ/$i"]
 
     close(file)
 
-    return t, u, v, w, b, νₑ, κₑ
+    return t, u, v, w, b
+end
+
+function get_statistics(filename, i)
+    t, u, v, w, b = get_fields(filename, i)
+    grid = get_grid(filename)
+    b′, U, V, B, Bz, E, w², e = calculate_statistics(grid, u, v, w, b)
+    return t, b′, U, V, B, Bz, E, w², e
+end
+
+function get_averages(filename, i)
+
+    U = mean(u, dims=(1, 2))
+    V = mean(v, dims=(1, 2))
+    B = mean(b, dims=(1, 2))
+    W² = mean(w.^2, dims=(1, 2))
+
+    return t, U, V, W², B
 end
 
 function get_wind_stress(filename)
@@ -95,4 +110,45 @@ function set_from_file!(model, filename; i=nothing)
     model.velocities.w.data.parent .= array_type(w₀)
     model.tracers.b.data.parent .= array_type(b₀)
 
+end
+
+function extract_averages_timeseries(directory)
+    filenames = cd(() -> glob("*fields*"), directory)
+
+    t, U, V, B, Bz, w², E = [[] for i=1:7]
+
+    filepath = joinpath(directory, filenames[1])
+    grid = get_grid(filepath)
+
+    for filename in filenames
+        filepath = joinpath(directory, filename)
+        iters = get_iters(filepath)
+
+        for iter in iters
+            tᵢ, u, v, w, b = get_fields(filepath, iter)
+
+            push!(t, tᵢ)
+
+            b′, Uᵢ, Vᵢ, Bᵢ, Bzᵢ, Eᵢ, w²ᵢ, e = calculate_statistics(grid, u, v, w, b)
+
+            push!(U, Uᵢ)
+            push!(V, Vᵢ)
+            push!(B, Bᵢ)
+            push!(Bz, Bzᵢ)
+            push!(w², w²ᵢ)
+            push!(E, Eᵢ)
+        end
+    end
+
+    ii = sortperm(t)
+
+     t = t[ii]
+     U = U[ii]
+     V = V[ii]
+     B = B[ii]
+    Bz = Bz[ii]
+    w² = w²[ii]
+     E = E[ii]
+
+    return t, U, V, B, Bz, w², E
 end

@@ -29,10 +29,12 @@ export
     get_iters,
     get_grid,
     get_fields,
+    get_statistics,
     get_wind_stress,
     get_surface_wave_parameters,
     get_parameter,
     set_from_file!,
+    extract_averages_timeseries,
 
     # les.jl
     SurfaceEnhancedModelConstant,
@@ -47,12 +49,20 @@ export
     GrowingStokesDrift,
     SteadyStokesDrift,
     EffectiveStressGrowingStokesDrift,
+
+    # plotting.jl
+    usecmbright,
+    defaultcolors,
+    removespines,
+    axes_grid1,
+    meshgrid,
+    get_position,
     
     # reexport from Oceananigans / CUDAapi
     @hascuda,
     has_cuda
 
-using OffsetArrays, JLD2, Printf
+using OffsetArrays, JLD2, Printf, Glob, Statistics
 
 using Oceananigans,
       Oceananigans.AbstractOperations,
@@ -79,12 +89,11 @@ using CUDAapi: has_cuda
 # Don't try to load PyPlot when we don't have a working python.
 withplots = false
 
-#=
 try
-    using PyPlot
+    using PyPlot, PyCall
     withplots = true
-catch; end
-=#
+catch
+end
 
 macro haspyplot(expr)
     return withplots ? :($(esc(expr))) : :(nothing)
@@ -101,6 +110,7 @@ end
 end
 
 include("utils.jl")
+include("analysis.jl")
 include("output.jl")
 include("forcing.jl")
 include("files.jl")
@@ -109,6 +119,7 @@ include("progress_messenger.jl")
 
 include("stokes_drift.jl")
 
-@haspyplot include("plotting.jl")
+#@haspyplot include("plotting.jl")
+include("plotting.jl")
 
 end # module

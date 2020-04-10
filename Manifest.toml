@@ -85,6 +85,12 @@ git-tree-sha1 = "2fdeb981ebcf52cd800ddb6a0aa5eac34153552d"
 uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
 version = "0.12.0"
 
+[[Compat]]
+deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
+git-tree-sha1 = "ed2c4abadf84c53d9e58510b5fc48912c2336fbb"
+uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
+version = "2.2.0"
+
 [[Conda]]
 deps = ["JSON", "VersionParsing"]
 git-tree-sha1 = "7a58bb32ce5d85f8bf7559aa7c2842f9aecf52fc"
@@ -112,6 +118,10 @@ version = "0.17.11"
 [[Dates]]
 deps = ["Printf"]
 uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
+
+[[DelimitedFiles]]
+deps = ["Mmap"]
+uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 
 [[Distributed]]
 deps = ["Random", "Serialization", "Sockets"]
@@ -151,6 +161,12 @@ deps = ["Cassette", "Requires", "StaticArrays"]
 git-tree-sha1 = "671b3b85510f3833c05f3846b3019edc131ab03d"
 uuid = "ba82f77b-6841-5d2e-bd9f-4daf811aec27"
 version = "0.2.9"
+
+[[Glob]]
+deps = ["Compat", "Test"]
+git-tree-sha1 = "c72f1fcb7d17426de1e8af2e948dfb3de1116eed"
+uuid = "c27321d9-0574-5035-807b-f59d2c89b15c"
+version = "1.2.0"
 
 [[IntelOpenMP_jll]]
 deps = ["Libdl", "Pkg"]
@@ -297,6 +313,10 @@ uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 
 [[Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
+
+[[SharedArrays]]
+deps = ["Distributed", "Mmap", "Random", "Serialization"]
+uuid = "1a1011a3-84de-559e-8e89-a11a2f7dc383"
 
 [[Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"

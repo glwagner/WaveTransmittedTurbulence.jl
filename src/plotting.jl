@@ -47,3 +47,30 @@ function makeplot!(axs, model)
 
     return nothing
 end
+
+function usecmbright()
+    rc("text.latex", preamble="\\usepackage{cmbright}")
+    rc("font", family="sans-serif")
+    return nothing
+end
+
+defaultcolors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+
+function removespine(ax, side)
+    ax.spines[side].set_visible(false)
+    return nothing
+end
+
+removespines(ax::PyObject, sides...) = [removespine(ax, side) for side in sides]
+removespines(sides...) = [removespine(gca(), side) for side in sides]
+
+axes_grid1 = pyimport("mpl_toolkits.axes_grid1")
+make_axes_locatable = axes_grid1.make_axes_locatable
+
+function meshgrid(x, y)
+    X = repeat(x, 1, length(y))
+    Y = repeat(reshape(y, 1, length(y)), length(x), 1)
+    return X, Y
+end
+
+get_position(ax) = [b for b in ax.get_position().bounds]

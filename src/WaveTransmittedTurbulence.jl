@@ -43,7 +43,9 @@ export
     SimulationProgressMessenger,
 
     # stokes_drift.jl
+    uˢ,
     GrowingStokesDrift,
+    SteadyStokesDrift,
     EffectiveStressGrowingStokesDrift,
     
     # reexport from Oceananigans / CUDAapi

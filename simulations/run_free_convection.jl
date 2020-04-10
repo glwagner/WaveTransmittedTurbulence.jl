@@ -158,14 +158,17 @@ field_writer = JLD2OutputWriter(model, FieldOutputs(fields_to_output); force=tru
                                          dir = data_directory,
                                       prefix = prefix * "_fields")
 
+simulation.output_writers[:fields] = field_writer
+
+#=
 # Horizontal averages
 averages_writer = JLD2OutputWriter(model, horizontal_averages(model); force=true, init=init,
                                    interval = 1hour, 
                                         dir = data_directory,
                                      prefix = prefix*"_averages")
 
-simulation.output_writers[:fields] = field_writer
 simulation.output_writers[:averages] = averages_writer
+=#
 
 # # Run
 

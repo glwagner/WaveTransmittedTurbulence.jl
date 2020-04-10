@@ -26,9 +26,9 @@ function print_banner(simulation)
                      Nz: $(model.grid.Nz)
                  Lx, Ly: $(model.grid.Lx) meters
                      Lz: $(model.grid.Lz) meters
-          fields output: $(simulation.output_writers[:fields].filepath)
-        averages output: $(simulation.output_writers[:averages].filepath)
+                 output: $(simulation.output_writers[:fields].filepath)
     """
+        #averages output: $(simulation.output_writers[:averages].filepath)
 
     println(banner)
 

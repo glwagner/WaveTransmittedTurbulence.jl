@@ -18,19 +18,28 @@ function parse_command_line_arguments()
     settings = ArgParseSettings()
 
     @add_arg_table! settings begin
-        "--spinup"
-            help = "The name of the directory to look for spinup data."
-            default = "free_convection_Qb1.0e-09_Nsq1.0e-05_Nh32_Nz32"
+        "--Nh"
+            help = "The number of grid points in x, y."
+            default = 32
+            arg_type = Int
+
+        "--Nz"
+            help = "The number of grid points in z."
+            default = 32
+            arg_type = Int
+
+        "--initial_condition"
+            help = """The initial conditions to use. The options are
+                   1. "excited"
+                   2. "resting"
+                   """
+            default = "excited"
             arg_type = String
 
-        "--case"
-            help = """The case to run. The options are:
-                   1. "growing_waves"
-                   2. "surface_stress_no_waves"
-                   3. "surface_stress_with_waves"
-                   """
-            default = "growing_waves"
-            arg_type = String
+        "--wave_multiplier"
+            help = "Sets the wave height as wave_multiplier * 0.8 meters."
+            default = 1.0
+            arg_type = Float64
 
         "--device", "-d"
             help = "The CUDA device index on which to run the simulation."
@@ -45,67 +54,64 @@ args = parse_command_line_arguments()
 
 @hascuda select_device!(args["device"])
  
-# # Set up simulation from spinup state
-spinup_name = args["spinup"]
+# # Specify numerical and physical parameters
 
-filepath = joinpath(@__DIR__, "..", "data", spinup_name, spinup_name * "_fields.jld2")
+Nh = args["Nh"]      # Number of grid points in x, y
+Nz = args["Nz"]      # Number of grid points in z
 
-# Grid
-grid = get_grid(filepath)
+# Coriolis parameter, kinematic stress, buoyancy flux, and wave parameters from 
+#
+#   > McWilliams et al, "Langmuir Turbulence in the Ocean," JFM (1997)
+#
+# Note that our domain is not the same size as McWilliams et al. (1997).
 
-# # Stokes drift parameters
-      wave_number = 2π / 100
-   wave_amplitude = 1.5
-growth_time_scale = 4hour
+         Lh = 128       # [m] Grid spacing in x, y (meters)
+         Lz = 64        # [m] Grid spacing in z (meters)
+          f = 1e-4      # [s⁻¹] Coriolis parameter
+         Qᵘ = -3.72e-5  # [m² s⁻²] Velocity flux / stress at surface
+         Qᵇ = 2.307e-9  # [m³ s⁻²] Buoyancy flux at surface
+         N² = 1.936e-5  # [s⁻²] Initial buoyancy gradient
+wave_number = 0.105     # [m⁻¹] Wavenumber of the steady monchromatic wave field overhead
+  stop_time = 4π / f    # [s] End time for the simulation
 
-case = args["case"]
+# A 'wave multiplier' of 1 corresponds to original parameters from McWilliams et al (1997).
+# A multipler of 0 means no waves, and > 1 produces strog waves
+wave_amplitude = 0.8 * args["wave_multiplier"]
 
-if case === "growing_waves"
+# # Choose initial condition
 
-    stokes_drift = GrowingStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude,
-                                      growth_time_scale=growth_time_scale)
+ic = args["initial_condition"]
 
-    u_bcs = UVelocityBoundaryConditions(grid) # default
-
-elseif case == "surface_stress_no_waves"
-
-    stokes_drift = nothing
-
-    Qᵘ = EffectiveStressGrowingStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude,
-                                           growth_time_scale=growth_time_scale)
-
-    u_bcs = UVelocityBoundaryConditions(grid, top = BoundaryCondition(Flux, Qᵘ)) # default
-
-elseif case == "surface_stress_with_waves"
-
-    stokes_drift = SteadyStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude,
-                                     growth_time_scale=growth_time_scale)
-
-    Qᵘ = EffectiveStressGrowingStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude,
-                                           growth_time_scale=growth_time_scale)
-
-    u_bcs = UVelocityBoundaryConditions(grid, top = BoundaryCondition(Flux, Qᵘ)) # default
-
+if ic == "resting"
+    uᵢ(x, y, z) = 0.0
+elseif ic == "excited"
+    uᵢ(x, y, z) = uˢ(wave_amplitude, wave_number) * exp(2 * wave_number * z)
 end
-   
-# Boundary conditions
-N² = get_parameter(filepath, "initial_conditions", "N²")
 
-b_bcs = TracerBoundaryConditions(grid, bottom=BoundaryCondition(Gradient, N²))
+# # Choose Stokes drift
 
-# Sponge layer
-δ = get_parameter(filepath, "sponge_layer", "δ")
-τ = get_parameter(filepath, "sponge_layer", "τ")
+if wave_amplitude == 0
+    stokes_drift = nothing # minor optimziation for control run.
+else
+    stokes_drift = SteadyStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude)
+end
+
+# # Set up sponge layer
+
+τ = 10       # [s] sponge layer damping time-scale
+δ = 6.0      # [m] sponge layer width
 
 u_forcing = ParameterizedForcing(Fu, (δ=δ, τ=τ))
 v_forcing = ParameterizedForcing(Fv, (δ=δ, τ=τ))
 w_forcing = ParameterizedForcing(Fw, (δ=δ, τ=τ))
 b_forcing = ParameterizedForcing(Fb, (δ=δ, τ=τ, dbdz=N²))
 
-# Reconstruct eddy diffusivity model
-Cᴬᴹᴰ = SurfaceEnhancedModelConstant(filepath)
+# # Set up boundary conditions
 
-f = get_parameter(filepath, "coriolis", "f")
+grid = RegularCartesianGrid(size=(Nh, Nh, Nz), length=(Lh, Lh, Lz))
+
+u_bcs = UVelocityBoundaryConditions(grid, top = BoundaryCondition(Flux, Qᵘ))
+b_bcs = TracerBoundaryConditions(grid, top = BoundaryCondition(Flux, Qᵇ))
 
 # # Model instantiation and initial condition
 
@@ -115,12 +121,21 @@ model = IncompressibleModel(       architecture = has_cuda() ? GPU() : CPU(),
                                        buoyancy = BuoyancyTracer(),
                                        coriolis = FPlane(f=f),
                                   surface_waves = stokes_drift,
-                                        closure = AnisotropicMinimumDissipation(C=Cᴬᴹᴰ),
+                                        closure = AnisotropicMinimumDissipation(),
                             boundary_conditions = (b=b_bcs, u=u_bcs),
                                         forcing = ModelForcing(u=u_forcing, v=v_forcing, w=w_forcing, b=b_forcing)
                            )
 
-set_from_file!(model, filepath)
+
+# Noise
+Ξ(z) = randn() * z / Lz * (1 + z / Lz) # noise
+ϵᵘ, ϵᵇ = 1e-6, 1e-6
+
+uᵋ(x, y, z) = ϵᵘ * sqrt(abs(Qᵘ)) * Ξ(z)
+bᵋ(x, y, z) = ϵᵇ * N² * Lz / Nz * Ξ(z)
+bᵢ(x, y, z) = N² * z + bᵋ(x, y, z)
+
+set!(model, v=uᵋ, w=uᵋ, b=bᵢ, u = (x, y, z) -> uᵢ(x, y, z) + uᵋ(x, y, z))
 
 # # Prepare the simulation
 
@@ -138,11 +153,7 @@ simulation = Simulation(model, Δt=wizard, stop_time=stop_time, progress_frequen
 
 # # Specify output
 
-prefix = @sprintf("growing_wave_forced_a%.1f_k%.1e_T%.1f_Nh%d_Nz%d", 
-                  stokes_drift.∂z_uˢ.wave_amplitude,
-                  stokes_drift.∂z_uˢ.wave_number,
-                  stokes_drift.∂z_uˢ.growth_time_scale / hour,
-                  model.grid.Nx, model.grid.Nz)
+prefix = @sprintf("initial_condition_study_%s_%sx_Nh%d_Nz%d", ic, string(args["wave_multiplier"]), Nh, Nz)
 
 data_directory = joinpath(@__DIR__, "..", "data", prefix) # save data in /data/prefix
 
@@ -151,9 +162,10 @@ function init(file, model; kwargs...)
     file["sponge_layer/δ"] = δ
     file["sponge_layer/τ"] = τ
     file["initial_conditions/N²"] = N²
-    file["surface_waves/wave_number"] = model.surface_waves.∂z_uˢ.wave_number
-    file["surface_waves/wave_amplitude"] = model.surface_waves.∂z_uˢ.wave_amplitude
-    file["surface_waves/growth_time_scale"] = model.surface_waves.∂z_uˢ.growth_time_scale
+    file["boundary_conditions/Qᵇ"] = Qᵇ
+    file["boundary_conditions/Qᵘ"] = Qᵘ
+    file["surface_waves/wave_number"] = wave_number
+    file["surface_waves/wave_amplitude"] = wave_amplitude
     return nothing
 end
 
@@ -169,8 +181,8 @@ field_writer = JLD2OutputWriter(model, FieldOutputs(fields_to_output); force=tru
 
 simulation.output_writers[:fields] = field_writer
 
-#=
 # Horizontal averages
+#=
 averages_writer = JLD2OutputWriter(model, horizontal_averages(model); force=true, init=init,
                                    interval = 1hour, 
                                         dir = data_directory,

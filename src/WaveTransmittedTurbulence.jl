@@ -33,12 +33,18 @@ export
     get_wind_stress,
     get_surface_wave_parameters,
     get_parameter,
+
+    # les.jl
+    SurfaceEnhancedModelConstant,
+
+    # progress_messenger.jl
+    ProgressMessenger,
     
     # reexport
     @hascuda,
     has_cuda
 
-using PyPlot, OffsetArrays, JLD2
+using PyPlot, OffsetArrays, JLD2, Printf
 
 using Oceananigans,
       Oceananigans.AbstractOperations,
@@ -74,5 +80,8 @@ include("plotting.jl")
 include("forcing.jl")
 include("files.jl")
 include("setup.jl")
+include("les.jl")
+
+include("progress_messenger.jl")
 
 end # module

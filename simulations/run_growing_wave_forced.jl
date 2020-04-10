@@ -48,7 +48,7 @@ args = parse_command_line_arguments()
 # # Set up simulation from spinup state
 spinup_name = args["spinup"]
 
-filepath = joinpath(@__DIR__, "..", "..", "data", spinup_name, spinup_name * "_fields.jld2")
+filepath = joinpath(@__DIR__, "..", "data", spinup_name, spinup_name * "_fields.jld2")
 
 # Grid
 grid = get_grid(filepath)

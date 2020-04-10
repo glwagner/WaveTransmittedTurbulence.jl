@@ -174,7 +174,7 @@ fields_to_output = merge(model.velocities, model.tracers, (νₑ=model.diffusivi
                          prefix_tuple_names(:κₑ, model.diffusivities.κₑ))
 
 field_writer = JLD2OutputWriter(model, FieldOutputs(fields_to_output); force=true, init=init,
-                                    interval = (stop_time - wizard.max_Δt) / 10, # output 10 fields
+                                    interval = π / 2f,
                                 max_filesize = 2GiB,
                                          dir = data_directory,
                                       prefix = prefix * "_fields")

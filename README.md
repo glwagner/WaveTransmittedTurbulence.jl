@@ -1,6 +1,6 @@
 # WaveTransmittedTurbulence
 
-Tools, setups, run scripts, and visualization scripts for reproducing results in 
+Tools, setups, run scripts, and visualization scripts for reproducing the simulation data and plots in 
 
 > Wagner et al., "Near inertial waves and turbulence driven by the growth of swell", _submitted to JPO in April 2020_
 

@@ -49,3 +49,8 @@ julia --project simulations/run_free_convection.jl --help
 ```
 
 To make more substantial changes to the setup, edit the script `simulations/run_free_convection.jl` directly.
+
+
+# Corresponding
+
+Feel free to raise an issue here or contact the corresponding author, Gregory Wagner, at `gregory.leclaire.wagner@gmail.com`.

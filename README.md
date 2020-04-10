@@ -2,7 +2,7 @@
 
 Tools, setups, run scripts, and visualization scripts for reproducing the simulation data and plots in 
 
-> Wagner et al., "Near inertial waves and turbulence driven by the growth of swell", _submitted to JPO in April 2020_
+> Wagner et al., "Near inertial waves and turbulence driven by the growth of surface waves", _submitted to JPO in April 2020_
 
 ## Simulations in section 3
 

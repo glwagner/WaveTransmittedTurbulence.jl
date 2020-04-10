@@ -4,7 +4,7 @@
 
 > Wagner et al., "Near inertial waves and turbulence driven by the growth of surface waves", _submitted to JPO in April 2020_
 
-All software in this repository is written in julia. The plots are produced with `PyPlot`, a julia wrapper for the python package `matplotlib`.
+All software in this repository is written in Julia. The plots are produced with `PyPlot`, a julia wrapper for the python package `matplotlib`.
 
 # Reproduction of large eddy simulation results
 

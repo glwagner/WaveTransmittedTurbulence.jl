@@ -1,8 +1,8 @@
 # WaveTransmittedTurbulence
 
-Tools, setups, run scripts, and visualization scripts for reproducing results in 
+Tools, setups, run scripts, and visualization scripts for reproducing the simulation data and plots in 
 
-> Wagner et al., "Near inertial waves and turbulence driven by the growth of swell", _submitted to JPO in April 2020_
+> Wagner et al., "Near inertial waves and turbulence driven by the growth of surface waves", _submitted to JPO in April 2020_
 
 ## Simulations in section 3
 
@@ -29,6 +29,12 @@ and
 
 ```
 julia --project simulations/spinup/run_free_convection.jl --buoyancy_flux 1e-8 --Nh 256 --Nz 256
+```
+
+Additional command line arguments are revealed by typing
+
+```
+julia --project simulations/spinup/run_free_convection.jl --help
 ```
 
 ### Turbulence and near-inertial waves griven by gradual surface wave growth

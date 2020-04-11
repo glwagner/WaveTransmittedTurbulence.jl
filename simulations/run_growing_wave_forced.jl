@@ -135,7 +135,7 @@ set_from_file!(model, filepath)
 stop_time = 2π / f
 
 # Adaptive time-stepping
-wizard = TimeStepWizard(       cfl = 0.2,
+wizard = TimeStepWizard(       cfl = 0.1,
                                 Δt = 1e-1,
                         max_change = 1.1,
                             max_Δt = 10.0)
@@ -154,6 +154,10 @@ prefix = @sprintf("growing_wave_forced_Qb%.1e_a%.1f_k%.1e_T%.1f_Nh%d_Nz%d",
                   model.grid.Nx, model.grid.Nz)
 
 data_directory = joinpath(@__DIR__, "..", "data", prefix) # save data in /data/prefix
+
+# Copy this file into the directory with data
+mkpath(data_directory)
+cp(@__FILE__, data_directory)
 
 "Save a few things that we might want when we analyze the data."
 function init(file, model; kwargs...)

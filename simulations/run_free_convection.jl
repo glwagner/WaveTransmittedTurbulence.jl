@@ -153,6 +153,10 @@ simulation = Simulation(model, Δt=wizard, stop_time=stop_time, progress_frequen
 
 data_directory = joinpath(@__DIR__, "..", "data", prefix) # save data in /data/prefix
 
+# Copy this file into the directory with data
+mkpath(data_directory)
+cp(@__FILE__, data_directory)
+
 # Three-dimensional field output
 fields_to_output = merge(model.velocities, model.tracers, (νₑ=model.diffusivities.νₑ,),
                          prefix_tuple_names(:κₑ, model.diffusivities.κₑ))
@@ -164,6 +168,7 @@ field_writer = JLD2OutputWriter(model, FieldOutputs(fields_to_output); force=tru
                                       prefix = prefix * "_fields")
 
 simulation.output_writers[:fields] = field_writer
+
 
 #=
 # Horizontal averages

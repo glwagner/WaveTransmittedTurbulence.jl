@@ -142,7 +142,7 @@ set!(model, v=uᵋ, w=uᵋ, b=bᵢ, u = (x, y, z) -> uᵢ(x, y, z) + uᵋ(x, y, 
 stop_time = 4π / f
 
 # Adaptive time-stepping
-wizard = TimeStepWizard(       cfl = 0.2,
+wizard = TimeStepWizard(       cfl = 0.1,
                                 Δt = 1e-1,
                         max_change = 1.1,
                             max_Δt = 10.0)
@@ -156,6 +156,10 @@ simulation = Simulation(model, Δt=wizard, stop_time=stop_time, progress_frequen
 prefix = @sprintf("initial_condition_study_%s_%sx_Nh%d_Nz%d", ic, string(args["wave_multiplier"]), Nh, Nz)
 
 data_directory = joinpath(@__DIR__, "..", "data", prefix) # save data in /data/prefix
+
+# Copy this file into the directory with data
+mkpath(data_directory)
+cp(@__FILE__, data_directory)
 
 "Save a few things that we might want when we analyze the data."
 function init(file, model; kwargs...)

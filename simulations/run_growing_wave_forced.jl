@@ -164,7 +164,7 @@ data_directory = joinpath(@__DIR__, "..", "data", prefix) # save data in /data/p
 
 # Copy this file into the directory with data
 mkpath(data_directory)
-cp(@__FILE__, joinpath(data_directory, @__FILE__), force=true)
+cp(@__FILE__, joinpath(data_directory, basename(@__FILE__)), force=true)
 
 "Save a few things that we might want when we analyze the data."
 function init(file, model; kwargs...)

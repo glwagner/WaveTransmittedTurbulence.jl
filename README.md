@@ -3,7 +3,7 @@
 ![vertical_velocity](figures/vertical_velocity_initial_conditions.png)
 
 <p align="center">
-<i> Vertical velocity contours in simulations of ocean surface boundary layer turbulence driven by wind both without (left) and with (center and right) surface waves.</i>
+<i> Image: vertical velocity contours in simulations of ocean surface boundary layer turbulence driven by wind both without (left) and with (center and right) surface waves.</i>
 </p>
 
 This repository contains [Julia](https://julialang.org) code for reproducing the simulation data and plots in 

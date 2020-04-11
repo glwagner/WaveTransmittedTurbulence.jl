@@ -80,7 +80,7 @@ stop_time = 4π / f
 
 # Wall-aware AMD model constant
 Δz = Lz/Nz
-Cᴬᴹᴰ = SurfaceEnhancedModelConstant(Δz, C₀=1/12, enhancement=7, decay_scale=8Δz)
+Cᴬᴹᴰ = SurfaceEnhancedModelConstant(Δz, C₀=1/12, enhancement=5, decay_scale=8Δz)
 
 κₑ_bcs = SurfaceFluxDiffusivityBoundaryConditions(grid, Qᵇ; Cʷ=1.0)
 

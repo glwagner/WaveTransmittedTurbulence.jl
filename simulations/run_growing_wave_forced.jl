@@ -61,8 +61,9 @@ filepath = joinpath(@__DIR__, "..", "data", spinup_name, filenames[1])
 grid = get_grid(filepath)
 
 # # Stokes drift parameters
-      wave_number = 2π / 100
-   wave_amplitude = 1.5
+      #wave_number = 2π / 100
+      wave_number = 2π / 60
+   wave_amplitude = 2.0
 growth_time_scale = 4hour
 
 case = args["case"]

@@ -1,3 +1,11 @@
+#= run_growing_wave_forced.jl
+
+This script sets up and runs a simulation of a turbulent boundary layer
+forced by a growing surface wave field.
+
+The script is intended to be used within the `WaveTransmittedTurbulence` 
+environment.
+=#
 using WaveTransmittedTurbulence
 
 using 
@@ -81,7 +89,7 @@ elseif case == "surface_stress_no_waves"
     Qᵘ = EffectiveStressGrowingStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude,
                                            growth_time_scale=growth_time_scale)
 
-    u_bcs = UVelocityBoundaryConditions(grid, top = BoundaryCondition(Flux, Qᵘ)) # default
+    u_bcs = UVelocityBoundaryConditions(grid, top = BoundaryCondition(Flux, Qᵘ))
 
 elseif case == "surface_stress_with_waves"
 
@@ -91,7 +99,7 @@ elseif case == "surface_stress_with_waves"
     Qᵘ = EffectiveStressGrowingStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude,
                                            growth_time_scale=growth_time_scale)
 
-    u_bcs = UVelocityBoundaryConditions(grid, top = BoundaryCondition(Flux, Qᵘ)) # default
+    u_bcs = UVelocityBoundaryConditions(grid, top = BoundaryCondition(Flux, Qᵘ))
 
 end
    

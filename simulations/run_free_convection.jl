@@ -1,3 +1,10 @@
+#= run_free_convection.jl
+
+This script runs a simulation of free convection. It is meant to be
+used to 'spin up' a turbulent boundary layer, for use as an initial 
+condition for simulations of boundary layer turbulence forced by the
+growth of surface waves.
+=#
 using WaveTransmittedTurbulence
 
 using 

@@ -93,8 +93,7 @@ elseif case == "surface_stress_no_waves"
 
 elseif case == "surface_stress_with_waves"
 
-    stokes_drift = SteadyStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude,
-                                     growth_time_scale=growth_time_scale)
+    stokes_drift = SteadyStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude)
 
     Qᵘ = EffectiveStressGrowingStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude,
                                            growth_time_scale=growth_time_scale)

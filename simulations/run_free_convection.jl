@@ -37,7 +37,12 @@ function parse_command_line_arguments()
         "--buoyancy_gradient"
             help = """The buoyancy gradient, or the square of the Brunt-Vaisala frequency N²,
                       at the start of the simulation in units s⁻²."""
-            default = 1e-5
+            default = 2e-6
+            arg_type = Float64
+
+        "--inertial_periods"
+            help = "The number of inertial periods for which the simulation should be run."
+            default = 1
             arg_type = Float64
 
         "--device", "-d"
@@ -74,13 +79,13 @@ grid = RegularCartesianGrid(size=(Nh, Nh, Nz), x=(0, Lh), y=(0, Lh), z=(-Lz, 0))
 #
 #   h ∼ √(2 * Qᵇ * stop_time / N²)
 
-stop_time = 4π / f
+stop_time = 2π / f * args["inertial_periods"]
 
 # # Near-wall LES diffusivity modification + temperature flux specification
 
 # Wall-aware AMD model constant
 Δz = Lz/Nz
-Cᴬᴹᴰ = SurfaceEnhancedModelConstant(Δz, C₀=1/12, enhancement=5, decay_scale=8Δz)
+Cᴬᴹᴰ = SurfaceEnhancedModelConstant(Δz, C₀=1/12, enhancement=7, decay_scale=4Δz)
 
 κₑ_bcs = SurfaceFluxDiffusivityBoundaryConditions(grid, Qᵇ; Cʷ=1.0)
 
@@ -116,7 +121,7 @@ model = IncompressibleModel(       architecture = has_cuda() ? GPU() : CPU(),
 
 # Initial condition
 ε₀, Δb, w★ = 1e-6, N² * Lz, (Qᵇ * Lz)^(1/3)
-Ξ(ε₀, z) = ε₀ * randn() * z / Lz * exp(4z / Lz) # noise
+Ξ(ε₀, z) = ε₀ * randn() * z / Lz * exp(z / 2) # rapidly decaying noise
 bᵢ(x, y, z) = N² * z + Ξ(ε₀ * Δb, z)
 uᵢ(x, y, z) = Ξ(ε₀ * w★, z)
 
@@ -135,7 +140,7 @@ end
 # # Prepare the simulation
 
 # Adaptive time-stepping
-wizard = TimeStepWizard(       cfl = 0.2,
+wizard = TimeStepWizard(       cfl = 0.1,
                                 Δt = 1e-1,
                         max_change = 1.1,
                             max_Δt = 10.0)

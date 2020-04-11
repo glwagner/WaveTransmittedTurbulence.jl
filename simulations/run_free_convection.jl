@@ -162,7 +162,7 @@ data_directory = joinpath(@__DIR__, "..", "data", prefix) # save data in /data/p
 
 # Copy this file into the directory with data
 mkpath(data_directory)
-cp(@__FILE__, data_directory)
+cp(@__FILE__, joinpath(data_directory, @__FILE__), force=true)
 
 # Three-dimensional field output
 fields_to_output = merge(model.velocities, model.tracers, (νₑ=model.diffusivities.νₑ,),

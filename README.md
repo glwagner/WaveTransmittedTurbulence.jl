@@ -35,7 +35,7 @@ julia --project -e 'using Pkg; Pkg.instantiate()'
   * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq2.0e-06_Nh256_Nz256 --case surface_stress_no_waves`
   * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq2.0e-06_Nh256_Nz256 --case surface_stress_with_waves`
   
-5. Run the 3 simulations in section 4:
+5. (Run the simulations in section 4):
 
 # A few details
 

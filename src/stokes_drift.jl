@@ -1,14 +1,14 @@
 uˢ(a, k, g=g_Earth) = a^2 * k * √(g * k)
 
 struct GrowingStokesShear{T} <: Function
-    wave_number :: T
+    wavenumber :: T
     wave_amplitude :: T
     max_surface_drift :: T
     growth_time_scale:: T
 end
 
 struct GrowingStokesTendency{T} <: Function
-    wave_number :: T
+    wavenumber :: T
     wave_amplitude :: T
     max_surface_drift :: T
     growth_time_scale :: T
@@ -22,21 +22,21 @@ end
 @inline ∂t_uˢ_growing(z, t, k, U, T) =      U * exp(2k * z) * ∂t_ramp(t, T)
 
 
-@inline (uˢ::GrowingStokesShear)(z, t) = ∂z_uˢ_growing(z, t, uˢ.wave_number, uˢ.max_surface_drift,
+@inline (uˢ::GrowingStokesShear)(z, t) = ∂z_uˢ_growing(z, t, uˢ.wavenumber, uˢ.max_surface_drift,
                                                        uˢ.growth_time_scale)
 
-@inline (uˢ::GrowingStokesTendency)(z, t) = ∂t_uˢ_growing(z, t, uˢ.wave_number, uˢ.max_surface_drift,
+@inline (uˢ::GrowingStokesTendency)(z, t) = ∂t_uˢ_growing(z, t, uˢ.wavenumber, uˢ.max_surface_drift,
                                                           uˢ.growth_time_scale)
 
 growing_wind_stress_func(x, y, t, p) = p.τʷ * p.Tʷ * ∂t_ramp(t, p.Tʷ)
 
-function GrowingStokesDrift(; wave_number, wave_amplitude, growth_time_scale)
+function GrowingStokesDrift(; wavenumber, wave_amplitude, growth_time_scale)
 
     # Deep water surface wave Stokes drift amplitude...
-    max_surface_drift = uˢ(wave_amplitude, wave_number)
+    max_surface_drift = uˢ(wave_amplitude, wavenumber)
 
-    shear = GrowingStokesShear(wave_number, wave_amplitude, max_surface_drift, growth_time_scale)
-    tendency = GrowingStokesTendency(wave_number, wave_amplitude, max_surface_drift, growth_time_scale)
+    shear = GrowingStokesShear(wavenumber, wave_amplitude, max_surface_drift, growth_time_scale)
+    tendency = GrowingStokesTendency(wavenumber, wave_amplitude, max_surface_drift, growth_time_scale)
 
     return UniformStokesDrift(∂z_uˢ=shear, ∂t_uˢ=tendency)
 end
@@ -45,9 +45,9 @@ end
 ##### Effective stress
 #####
 
-function EffectiveStressGrowingStokesDrift(; wave_number, wave_amplitude, growth_time_scale)
+function EffectiveStressGrowingStokesDrift(; wavenumber, wave_amplitude, growth_time_scale)
 
-    effective_stress = - wave_amplitude^2 * sqrt(g_Earth * wave_number) / (2 * growth_time_scale)
+    effective_stress = - wave_amplitude^2 * sqrt(g_Earth * wavenumber) / (2 * growth_time_scale)
 
     growing_wind_stress = BoundaryFunction{:z, Face, Cell}(growing_wind_stress_func,
                                                            (τʷ = effective_stress, Tʷ = growth_time_scale))
@@ -60,21 +60,21 @@ end
 #####
 
 struct SteadyStokesShear{T} <: Function
-    wave_number :: T
+    wavenumber :: T
     wave_amplitude :: T
     surface_drift :: T
 end
 
 @inline ∂z_uˢ_steady(z, t, k, U) = 2k * U * exp(2k * z)
 
-@inline (uˢ::SteadyStokesShear)(z, t) = ∂z_uˢ_steady(z, t, uˢ.wave_number, uˢ.surface_drift)
+@inline (uˢ::SteadyStokesShear)(z, t) = ∂z_uˢ_steady(z, t, uˢ.wavenumber, uˢ.surface_drift)
 
-function SteadyStokesDrift(; wave_number, wave_amplitude)
+function SteadyStokesDrift(; wavenumber, wave_amplitude)
 
     # Deep water surface wave Stokes drift amplitude...
-    surface_drift = wave_amplitude^2 * wave_number * sqrt(g_Earth * wave_number)
+    surface_drift = wave_amplitude^2 * wavenumber * sqrt(g_Earth * wavenumber)
 
-    shear = SteadyStokesShear(wave_number, wave_amplitude, surface_drift)
+    shear = SteadyStokesShear(wavenumber, wave_amplitude, surface_drift)
 
     return UniformStokesDrift(∂z_uˢ=shear)
 end

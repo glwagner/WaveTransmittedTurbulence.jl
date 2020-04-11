@@ -36,7 +36,7 @@ julia --project -e 'using Pkg; Pkg.instantiate()'
 
   * `julia --project simulations/run_free_convection.jl --buoyancy_flux 1e-9 --buoyancy_gradient 2e-6 --Nh 256 --Nz 256`
   
-5. Run the science simulations in section 3:
+5. Run the simulations of turbulence forced either by growing waves, or by pulses of wind, in section 3:
 
   * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq2.0e-06_Nh256_Nz256 --case growing_waves`
   * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq2.0e-06_Nh256_Nz256 --case surface_stress_no_waves`

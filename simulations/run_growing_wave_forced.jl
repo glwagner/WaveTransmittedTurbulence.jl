@@ -166,12 +166,21 @@ cp(@__FILE__, joinpath(data_directory, basename(@__FILE__)), force=true)
 
 "Save a few things that we might want when we analyze the data."
 function init(file, model; kwargs...)
+
     file["sponge_layer/δ"] = δ
     file["sponge_layer/τ"] = τ
     file["initial_conditions/N²"] = N²
-    file["surface_waves/wave_number"] = model.surface_waves.∂z_uˢ.wave_number
-    file["surface_waves/wave_amplitude"] = model.surface_waves.∂z_uˢ.wave_amplitude
-    file["surface_waves/growth_time_scale"] = model.surface_waves.∂z_uˢ.growth_time_scale
+
+    if model.surface_waves !== nothing 
+        file["surface_waves/wave_number"] = wave_number
+        file["surface_waves/wave_amplitude"] = wave_amplitude
+        file["surface_waves/growth_time_scale"] = growth_time_scale
+    else
+        file["surface_waves/wave_number"] = 0
+        file["surface_waves/wave_amplitude"] = 0
+        file["surface_waves/growth_time_scale"] = 0
+    end
+
     return nothing
 end
 

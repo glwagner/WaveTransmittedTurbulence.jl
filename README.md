@@ -2,7 +2,7 @@
 
 [Julia](https://julialang.org) code reproducing the simulation data and plots in 
 
-> Wagner et al., "Near inertial waves and turbulence driven by the growth of surface waves", _submitted to JPO in April 2020_
+> Wagner et al., "Near inertial waves and turbulence driven by the growth of surface waves", _in prep_
 
 All software in this repository is written in Julia. The plots are produced with `PyPlot`, a Julia wrapper for the python package `matplotlib`.
 

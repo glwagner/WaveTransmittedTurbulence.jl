@@ -32,10 +32,9 @@ git clone https://github.com/glwagner/WaveTransmittedTurbulence.git; cd WaveTran
 julia --project -e 'using Pkg; Pkg.instantiate()'
 ```
 
-4. Run the spinup simulations for section 3 (this will take some time with a high-octane GPU):
+4. Run the spinup simulation for section 3 (alll simulations will take some time with a high-octane GPU):
 
-  * `julia --project simulations/run_free_convection.jl --buoyancy_flux 1e-9 --Nh 256 --Nz 256`
-  * `julia --project simulations/run_free_convection.jl --buoyancy_flux 1e-8 --Nh 256 --Nz 256`
+  * `julia --project simulations/run_free_convection.jl --buoyancy_flux 1e-9 --buoyancy_gradient 2e-6 --Nh 256 --Nz 256`
   
 5. Run the science simulations in section 3:
 

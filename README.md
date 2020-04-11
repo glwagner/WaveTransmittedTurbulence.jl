@@ -29,14 +29,11 @@ julia --project -e 'using Pkg; Pkg.instantiate()'
   * `julia --project simulations/run_free_convection.jl --buoyancy_flux 1e-9 --Nh 256 --Nz 256`
   * `julia --project simulations/run_free_convection.jl --buoyancy_flux 1e-8 --Nh 256 --Nz 256`
   
-4. Run the 6 science simulations in section 3:
+4. Run the science simulations in section 3:
 
-  * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq1.0e-05_Nh256_Nz256 --case growing_waves`
-  * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq1.0e-05_Nh256_Nz256 --case surface_stress_no_waves`
-  * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq1.0e-05_Nh256_Nz256 --case surface_stress_with_waves`
-  * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-08_Nsq1.0e-05_Nh256_Nz256 --case growing_waves`
-  * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-08_Nsq1.0e-05_Nh256_Nz256 --case surface_stress_no_waves`
-  * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-08_Nsq1.0e-05_Nh256_Nz256 --case surface_stress_with_waves`
+  * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq2.0e-06_Nh256_Nz256 --case growing_waves`
+  * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq2.0e-06_Nh256_Nz256 --case surface_stress_no_waves`
+  * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq2.0e-06_Nh256_Nz256 --case surface_stress_with_waves`
   
 5. Run the 3 simulations in section 4:
 

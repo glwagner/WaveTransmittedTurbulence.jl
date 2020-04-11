@@ -86,19 +86,6 @@ using GPUifyLoops: @loop, @launch
 
 using CUDAapi: has_cuda
 
-# Don't try to load PyPlot when we don't have a working python.
-withplots = false
-
-try
-    using PyPlot, PyCall
-    withplots = true
-catch
-end
-
-macro haspyplot(expr)
-    return withplots ? :($(esc(expr))) : :(nothing)
-end
-
 @hascuda begin
     using CUDAnative, CUDAdrv
 
@@ -119,7 +106,21 @@ include("progress_messenger.jl")
 
 include("stokes_drift.jl")
 
-#@haspyplot include("plotting.jl")
-include("plotting.jl")
+#=
+# Don't try to load PyPlot when we don't have a working python.
+withplots = false
+
+try
+    using PyPlot, PyCall
+    withplots = true
+catch
+end
+
+macro haspyplot(expr)
+    return withplots ? :($(esc(expr))) : :(nothing)
+end
+
+@haspyplot include("plotting.jl")
+=#
 
 end # module

@@ -6,7 +6,7 @@
 <i> Vertical velocity contours in simulations of ocean surface boundary layer turbulence driven by wind both without (left) and with (center and right) surface waves.</i>
 </p>
 
-[Julia](https://julialang.org) code reproducing the simulation data and plots in 
+This repository contains [Julia](https://julialang.org) code for reproducing the simulation data and plots in 
 
 > Wagner et al., "Near inertial waves and turbulence driven by the growth of surface waves", _in prep_
 

@@ -1,6 +1,8 @@
 # WaveTransmittedTurbulence
 
-!(figures/vertical_velocity_initial_conditions.png)
+![vertical_velocity](figures/vertical_velocity_initial_conditions.png)
+
+*Vertical velocity contours in three simulations of wind- and wave-driven turbulence in the ocean surface boundary layer.*
 
 [Julia](https://julialang.org) code reproducing the simulation data and plots in 
 

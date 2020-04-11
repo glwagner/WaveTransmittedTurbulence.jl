@@ -1,5 +1,7 @@
 # WaveTransmittedTurbulence
 
+![figures/vertical_velocity_initial_conditions.png]
+
 [Julia](https://julialang.org) code reproducing the simulation data and plots in 
 
 > Wagner et al., "Near inertial waves and turbulence driven by the growth of surface waves", _in prep_

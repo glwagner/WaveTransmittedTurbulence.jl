@@ -42,7 +42,7 @@ function parse_command_line_arguments()
 
         "--inertial_periods"
             help = "The number of inertial periods for which the simulation should be run."
-            default = 1
+            default = 1.0
             arg_type = Float64
 
         "--device", "-d"

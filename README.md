@@ -34,8 +34,14 @@ julia --project -e 'using Pkg; Pkg.instantiate()'
   * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq2.0e-06_Nh256_Nz256 --case growing_waves`
   * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq2.0e-06_Nh256_Nz256 --case surface_stress_no_waves`
   * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq2.0e-06_Nh256_Nz256 --case surface_stress_with_waves`
-  
-5. (Run the simulations in section 4):
+ 
+5. Run the simulations in section 4:
+
+  *  `julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 0`
+  *  `julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 1`
+  *  `julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition excited --wave_multiplier 1`
+  *  `julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 4`
+  *  `julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition excited --wave_multiplier 4`
 
 # A few details
 

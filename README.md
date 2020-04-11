@@ -1,6 +1,6 @@
 # WaveTransmittedTurbulence
 
-![figures/vertical_velocity_initial_conditions.png]
+!(figures/vertical_velocity_initial_conditions.png)
 
 [Julia](https://julialang.org) code reproducing the simulation data and plots in 
 

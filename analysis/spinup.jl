@@ -4,7 +4,7 @@ using Oceananigans.Buoyancy: g_Earth
 
 mplot3d = pyimport("mpl_toolkits.mplot3d")
 
-     run_name = "free_convection_Qb1.0e-08_Nsq1.0e-05_Nh256_Nz256"
+     run_name = "free_convection_Qb1.0e-09_Nsq1.0e-05_Nh256_Nz256"
 run_directory = joinpath(@__DIR__, "..", "data", run_name)
      run_path = joinpath(run_directory, run_name * "_fields_part4.jld2")
 

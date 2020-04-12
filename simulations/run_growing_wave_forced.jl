@@ -178,7 +178,7 @@ spinup_time = get_final_time(filepath) * f / 2π # Final spinup time / initial s
 
 prefix = @sprintf("%s_Qb%.1e_Nsq%.1e_init%.1f_a%.1f_k%.1e_T%.1f_Nh%d_Nz%d", case,
                   get_parameter(filepath, "boundary_conditions", "Qᵇ"),
-                  get_parameter(filepath, "initial_condition", "N²"),
+                  get_parameter(filepath, "initial_conditions", "N²"),
                   spinup_time, wave_amplitude, wavenumber, 
                   growth_time_scale / hour, model.grid.Nx, model.grid.Nz)
 

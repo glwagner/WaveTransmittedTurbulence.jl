@@ -108,21 +108,17 @@ include("progress_messenger.jl")
 
 include("stokes_drift.jl")
 
-#=
 # Don't try to load PyPlot when we don't have a working python.
-withplots = false
-
-try
+withplots = try
     using PyPlot, PyCall
-    withplots = true
+    include("plotting.jl")
+    true
 catch
+    false
 end
 
 macro haspyplot(expr)
     return withplots ? :($(esc(expr))) : :(nothing)
 end
-
-@haspyplot include("plotting.jl")
-=#
 
 end # module

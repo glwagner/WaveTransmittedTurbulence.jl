@@ -73,10 +73,10 @@ Nz = args["Nz"]                # Number of grid points in z
 Qᵇ = args["buoyancy_flux"]     # [m² s⁻³] Buoyancy flux at surface
 N² = args["buoyancy_gradient"] # [s⁻²] Initial buoyancy gradient
 
-Lh = 128                   # [m] Grid spacing in x, y (meters)
-Lz = 64                    # [m] Grid spacing in z (meters)
-θ₀ = 20.0                  # [ᵒC] Surface temperature
- f = 1e-4                  # [s⁻¹] Coriolis parameter
+Lh = 128                       # [m] Grid spacing in x, y (meters)
+Lz = 64                        # [m] Grid spacing in z (meters)
+θ₀ = 20.0                      # [ᵒC] Surface temperature
+ f = 1e-4                      # [s⁻¹] Coriolis parameter
 
 # Create the grid 
 grid = RegularCartesianGrid(size=(Nh, Nh, Nz), x=(0, Lh), y=(0, Lh), z=(-Lz, 0))
@@ -114,7 +114,8 @@ b_forcing = ParameterizedForcing(Fb, (δ=δ, τ=τ, dbdz=N²))
 
 # # Model instantiation, initial condition, and model run
 
-prefix = @sprintf("free_convection_Qb%.1e_Nsq%.1e_Nh%d_Nz%d", Qᵇ, N², Nh, Nz)
+prefix = @sprintf("free_convection_Qb%.1e_Nsq%.1e_stop%.1f_Nh%d_Nz%d", Qᵇ, N², 
+                  stop_time * f / 2π, Nh, Nz)
 
 model = IncompressibleModel(       architecture = has_cuda() ? GPU() : CPU(),
                                            grid = grid,
@@ -147,7 +148,7 @@ end
 # # Prepare the simulation
 
 # Adaptive time-stepping
-wizard = TimeStepWizard(       cfl = 0.1,
+wizard = TimeStepWizard(       cfl = 0.01,
                                 Δt = 1e-1,
                         max_change = 1.1,
                             max_Δt = 10.0)

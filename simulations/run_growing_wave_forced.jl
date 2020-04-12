@@ -31,6 +31,12 @@ function parse_command_line_arguments()
             default = "free_convection_Qb1.0e-09_Nsq2.0e-06_Nh32_Nz32"
             arg_type = String
 
+        "--spinup_part"
+            help = """The spinup file to look in for an initial condition.
+                      0 chooses the largest part number in the spinup directory."""
+            default = 0
+            arg_type = Int
+
         "--case"
             help = """The case to run. The options are:
                    1. "growing_waves"
@@ -39,6 +45,21 @@ function parse_command_line_arguments()
                    """
             default = "growing_waves"
             arg_type = String
+
+        "--wave_amplitude"
+            help = "The equilibrium wave field amplitude in meters."
+            default = 2.0
+            arg_type = Float64
+
+        "--growth_time_scale"
+            help = "The time-scale for wave growth in hours."
+            default = 4.0
+            arg_type = Float64
+
+        "--wavelength"
+            help = "The wave length of the surface waves in meters."
+            default = 100.0
+            arg_type = Float64
 
         "--device", "-d"
             help = "The CUDA device index on which to run the simulation."
@@ -58,26 +79,27 @@ spinup_name = args["spinup"]
 
 spinup_directory = joinpath(@__DIR__, "..", "data", spinup_name)
 
-# Pick last spinup file:
+# Sort spinup files so that one may be picked:
 filenames = cd(() -> glob("*fields*"), spinup_directory)
 sortby(filename) = parse(Int, filename[length(spinup_name)+13:end-5])
-sort!(filenames, by=sortby, rev=true)
+sort!(filenames, by=sortby)
+part = args["spinup_part"] == 0 ? length(filenames) : args["spinup_part"]
 
-filepath = joinpath(@__DIR__, "..", "data", spinup_name, filenames[1])
+filepath = joinpath(@__DIR__, "..", "data", spinup_name, filenames[part])
 
 # Grid
 grid = get_grid(filepath)
 
 # # Stokes drift parameters
-      wave_number = 2π / 100
-   wave_amplitude = 1.0
-growth_time_scale = 4hour
+      wavenumber = 2π / args["wavelength"]
+   wave_amplitude = args["wave_amplitude"]
+growth_time_scale = args["growth_time_scale"] * hour
 
 case = args["case"]
 
 if case === "growing_waves"
 
-    stokes_drift = GrowingStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude,
+    stokes_drift = GrowingStokesDrift(wavenumber=wavenumber, wave_amplitude=wave_amplitude,
                                       growth_time_scale=growth_time_scale)
 
     u_bcs = UVelocityBoundaryConditions(grid) # default
@@ -86,16 +108,16 @@ elseif case == "surface_stress_no_waves"
 
     stokes_drift = nothing
 
-    Qᵘ = EffectiveStressGrowingStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude,
+    Qᵘ = EffectiveStressGrowingStokesDrift(wavenumber=wavenumber, wave_amplitude=wave_amplitude,
                                            growth_time_scale=growth_time_scale)
 
     u_bcs = UVelocityBoundaryConditions(grid, top = BoundaryCondition(Flux, Qᵘ))
 
 elseif case == "surface_stress_with_waves"
 
-    stokes_drift = SteadyStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude)
+    stokes_drift = SteadyStokesDrift(wavenumber=wavenumber, wave_amplitude=wave_amplitude)
 
-    Qᵘ = EffectiveStressGrowingStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude,
+    Qᵘ = EffectiveStressGrowingStokesDrift(wavenumber=wavenumber, wave_amplitude=wave_amplitude,
                                            growth_time_scale=growth_time_scale)
 
     u_bcs = UVelocityBoundaryConditions(grid, top = BoundaryCondition(Flux, Qᵘ))
@@ -152,10 +174,13 @@ simulation = Simulation(model, Δt=wizard, stop_time=stop_time, progress_frequen
 
 # # Specify output
 
-prefix = @sprintf("%s_Qb%.1e_a%.1f_k%.1e_T%.1f_Nh%d_Nz%d", case,
+spinup_time = get_final_time(filepath) * f / 2π # Final spinup time / initial sim time, in inertial periods
+
+prefix = @sprintf("%s_Qb%.1e_Nsq%.1e_init%.1f_a%.1f_k%.1e_T%.1f_Nh%d_Nz%d", case,
                   get_parameter(filepath, "boundary_conditions", "Qᵇ"),
-                  wave_amplitude, wave_number, growth_time_scale / hour,
-                  model.grid.Nx, model.grid.Nz)
+                  get_parameter(filepath, "initial_conditions", "N²"),
+                  spinup_time, wave_amplitude, wavenumber, 
+                  growth_time_scale / hour, model.grid.Nx, model.grid.Nz)
 
 data_directory = joinpath(@__DIR__, "..", "data", prefix) # save data in /data/prefix
 
@@ -171,11 +196,11 @@ function init(file, model; kwargs...)
     file["initial_conditions/N²"] = N²
 
     if model.surface_waves !== nothing 
-        file["surface_waves/wave_number"] = wave_number
+        file["surface_waves/wavenumber"] = wavenumber
         file["surface_waves/wave_amplitude"] = wave_amplitude
         file["surface_waves/growth_time_scale"] = growth_time_scale
     else
-        file["surface_waves/wave_number"] = 0
+        file["surface_waves/wavenumber"] = 0
         file["surface_waves/wave_amplitude"] = 0
         file["surface_waves/growth_time_scale"] = 0
     end

@@ -65,14 +65,14 @@ Nz = args["Nz"]      # Number of grid points in z
 #
 # Note that our domain is not the same size as McWilliams et al. (1997).
 
-         Lh = 128       # [m] Grid spacing in x, y (meters)
-         Lz = 64        # [m] Grid spacing in z (meters)
-          f = 1e-4      # [s⁻¹] Coriolis parameter
-         Qᵘ = -3.72e-5  # [m² s⁻²] Velocity flux / stress at surface
-         Qᵇ = 2.307e-9  # [m³ s⁻²] Buoyancy flux at surface
-         N² = 1.936e-5  # [s⁻²] Initial buoyancy gradient
-wave_number = 0.105     # [m⁻¹] Wavenumber of the steady monchromatic wave field overhead
-  stop_time = 4π / f    # [s] End time for the simulation
+        Lh = 128       # [m] Grid spacing in x, y (meters)
+        Lz = 64        # [m] Grid spacing in z (meters)
+         f = 1e-4      # [s⁻¹] Coriolis parameter
+        Qᵘ = -3.72e-5  # [m² s⁻²] Velocity flux / stress at surface
+        Qᵇ = 2.307e-9  # [m³ s⁻²] Buoyancy flux at surface
+        N² = 1.936e-5  # [s⁻²] Initial buoyancy gradient
+wavenumber = 0.105     # [m⁻¹] Wavenumber of the steady monchromatic wave field overhead
+ stop_time = 4π / f    # [s] End time for the simulation
 
 # A 'wave multiplier' of 1 corresponds to original parameters from McWilliams et al (1997).
 # A multipler of 0 means no waves, and > 1 produces strog waves
@@ -85,7 +85,7 @@ ic = args["initial_condition"]
 if ic == "resting"
     uᵢ(x, y, z) = 0.0
 elseif ic == "excited"
-    uᵢ(x, y, z) = uˢ(wave_amplitude, wave_number) * exp(2 * wave_number * z)
+    uᵢ(x, y, z) = uˢ(wave_amplitude, wavenumber) * exp(2 * wavenumber * z)
 end
 
 # # Choose Stokes drift
@@ -93,7 +93,7 @@ end
 if wave_amplitude == 0
     stokes_drift = nothing # minor optimziation for control run.
 else
-    stokes_drift = SteadyStokesDrift(wave_number=wave_number, wave_amplitude=wave_amplitude)
+    stokes_drift = SteadyStokesDrift(wavenumber=wavenumber, wave_amplitude=wave_amplitude)
 end
 
 # # Set up sponge layer
@@ -168,7 +168,7 @@ function init(file, model; kwargs...)
     file["initial_conditions/N²"] = N²
     file["boundary_conditions/Qᵇ"] = Qᵇ
     file["boundary_conditions/Qᵘ"] = Qᵘ
-    file["surface_waves/wave_number"] = wave_number
+    file["surface_waves/wavenumber"] = wavenumber
     file["surface_waves/wave_amplitude"] = wave_amplitude
     return nothing
 end

@@ -6,6 +6,15 @@ function get_iters(filename)
     return iters
 end
 
+function get_time(filename, i)
+    file = jldopen(filename)
+    t = file["timeseries/t/$i"]
+    close(file)
+    return t
+end
+
+get_final_time(filename) = get_time(filename, get_iters(filename)[end])
+
 function get_grid(filename)
     file = jldopen(filename)
 

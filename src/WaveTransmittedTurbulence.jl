@@ -27,6 +27,8 @@ export
 
     # files.jl
     get_iters,
+    get_time,
+    get_final_time,
     get_grid,
     get_fields,
     get_statistics,

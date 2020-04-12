@@ -3,13 +3,13 @@
 ![wave-driven-turbulence](figures/figure_1.png)
 
 <p align="center">
-<i> Figure 1: turbulence and currents transmitted to the ocean during the forced growth of a surface gravity wave field. (Left) vertical velocity normalized by the maximum effective friction velocity, (right) horizontally-averaged currents after 1/8th an inertial period and after a full inertial period.</i>
+<i> Figure 1: Turbulence and currents transmitted to the ocean during the forced growth of a surface gravity wave field. (Left) vertical velocity normalized by the maximum effective friction velocity, (right) horizontally-averaged currents after 1/8th an inertial period and after a full inertial period.</i>
 </p>
 
 ![vertical_velocity](figures/figure_3.png)
 
 <p align="center">
-<i> Figure 3: vertical velocity contours in simulations of ocean surface boundary layer turbulence driven by wind both without (left) and with (center and right) surface waves.</i>
+<i> Figure 3: Vertical velocity contours in simulations of ocean surface boundary layer turbulence driven by wind both without waves (left) and beneath steady waves (center and right).</i>
 </p>
 
 This repository contains [Julia](https://julialang.org) code for reproducing the simulation data and plots in 

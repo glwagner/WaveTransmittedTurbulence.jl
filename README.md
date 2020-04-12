@@ -40,23 +40,63 @@ git clone https://github.com/glwagner/WaveTransmittedTurbulence.git; cd WaveTran
 julia --project -e 'using Pkg; Pkg.instantiate()'
 ```
 
-4. Run the spinup simulation for section 3 (alll simulations will take some time with a high-octane GPU):
+4. Run the spinup LES for section 3 (alll simulations will take some time with a high-octane GPU):
 
-  * `julia --project simulations/run_free_convection.jl --buoyancy_flux 1e-9 --buoyancy_gradient 1e-6 --Nh 256 --Nz 256`
+  ```
+  julia --project simulations/run_free_convection.jl --buoyancy_flux 1e-9 --buoyancy_gradient 1e-6 --Nh 256 --Nz 256
+  ```
   
-5. Run the simulations of turbulence forced either by growing waves, or by pulses of wind, in section 3:
+5. Run the LESs of turbulence forced either by growing waves, or by pulses of wind, in section 3:
 
-  * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq1.0e-06_Nh256_Nz256 --wave_amplitude 2 --case growing_waves`
-  * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq1.0e-06_Nh256_Nz256 --wave_amplitude 2 --case surface_stress_no_waves`
-  * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq1.0e-06_Nh256_Nz256 --wave_amplitude 2 --case surface_stress_with_waves`
+  * LES of turbulence beneath growing waves:
+  
+  ```
+  julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq1.0e-06_Nh256_Nz256 --wave_amplitude 2 --case growing_waves
+  ```
+  
+  * Run a LES of turbulence beneath a wind stress pulse, with no waves:
+  
+  ```
+  julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq1.0e-06_Nh256_Nz256 --wave_amplitude 2 --case surface_stress_no_waves
+  ```
+  
+  * Run a LES of turbulence beneath a wind stress pulse, with steady waves overhead:
+  
+  ```
+  julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq1.0e-06_Nh256_Nz256 --wave_amplitude 2 --case surface_stress_with_waves
+  ```
  
 6. Perform the initial condition study in section 4:
 
-  *  `julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 0`
-  *  `julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 1`
-  *  `julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition excited --wave_multiplier 1`
-  *  `julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 4`
-  *  `julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition excited --wave_multiplier 4`
+  * Run the 'control' LES forced by wind stress with no waves:
+  
+  ```
+  julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 0
+  ```
+  
+  * Run the 'excited, 1x' LES forced by wind stress with steady waves and 'excited' initial conditions. This LES reproduces results from McWilliams et al., "Langmuir turbulence in the ocean," JFM (1997):
+  
+  ```
+  julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 1
+  ```
+  
+  * Run the 'resting, 1x' LES forced by wind stress with steady waves and 'excited' initial conditions:
+  
+  ```
+  julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition excited --wave_multiplier 1
+  ```
+  
+  * Run the 'excited, 4x' LES, similar to 'excited, 1x' except with a 4x stronger wave field:
+  
+  ```
+  julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 4
+  ```
+  
+  * Run the 'resting, 4x' LES, similar to 'resting, 1x' except for a 4x stronger wave field:
+  
+  ```
+  julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition excited --wave_multiplier 4
+  ```
 
 ## A few details
 

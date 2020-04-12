@@ -40,7 +40,7 @@ git clone https://github.com/glwagner/WaveTransmittedTurbulence.git; cd WaveTran
 julia --project -e 'using Pkg; Pkg.instantiate()'
 ```
 
-4. Run the spinup LES for section 3 (alll simulations will take some time with a high-octane GPU):
+4. Run the spinup LES for section 3 (all simulations will take some time to complete even with a high-octane GPU):
 
   ```
   julia --project simulations/run_free_convection.jl --buoyancy_flux 1e-9 --buoyancy_gradient 1e-6 --Nh 256 --Nz 256
@@ -92,7 +92,7 @@ julia --project -e 'using Pkg; Pkg.instantiate()'
   julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 4
   ```
   
-  * Run the 'resting, 4x' LES, similar to 'resting, 1x' except for a 4x stronger wave field:
+  * Run the 'resting, 4x' LES, similar to 'resting, 1x' except with a 4x stronger wave field:
   
   ```
   julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition excited --wave_multiplier 4

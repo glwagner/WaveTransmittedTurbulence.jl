@@ -147,11 +147,11 @@ ax2.plot(V[i₁][k_deep+1:k_surface+1] / u★, grid.zC[k_deep:end], linestyle="-
 ax2.plot(U[i₂][k_deep+1:k_surface+1] / u★, grid.zC[k_deep:end], linestyle="-",  alpha=α₁, linewidth=lw₁, color=defaultcolors[2], label=L"\overline{u^\mathrm{L}} \, |_{t=2 \pi/f}")
 ax2.plot(V[i₂][k_deep+1:k_surface+1] / u★, grid.zC[k_deep:end], linestyle="--", alpha=α₂, linewidth=lw₂, color=defaultcolors[2], label=L"\overline{v^\mathrm{L}} \, |_{t=2 \pi/f}")
 
-legend(prop=Dict(:size=>fs), bbox_to_anchor=(0.4, 0, 0.1, 1), loc=3) #, frameon=true)
+legend(prop=Dict(:size=>fs), bbox_to_anchor=(0.4, 0, 0.1, 1), loc=3, markerfirst=false, frameon=false)
 
 ax2.set_xlabel(L"(\overline{u^\mathrm{L}}, \overline{u^\mathrm{L}}) \, / \, \max(u_\star)")
 ax2.set_ylabel(L"z \, (\mathrm{m})", labelpad=12.0)
 
 removespines(ax2, "right", "top")
 
-savefig("figure_1.png", dpi=480)
+savefig(joinpath(@__DIR__, "..", "figures", "figure_1.png"), dpi=480)

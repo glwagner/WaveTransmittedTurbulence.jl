@@ -134,4 +134,4 @@ for (i, pos) in enumerate(positions)
     axs[i].set_position(pos)
 end
 
-#savefig("growth_comparison.png", dpi=480)
+savefig(joinpath(@__DIR__, "..", "figures", "figure_2.png"), dpi=480)

@@ -3,7 +3,7 @@
 ![wave-driven-turbulence](figures/figure_1.png)
 
 <p align="center">
-<i> Figure 1: Turbulence and currents transmitted to the ocean during surface gravity wave forcing by (highly idealized) pressure forcing and without wind, as modeled by large eddy simulations with [Oceananigans.jl](https://github.com/climate-machine/Oceananigans.jl). The left panel shows vertical velocity contours normalized by the maximum effective friction velocity, while the right panel shows horizontally-averaged currents after 1/8th an inertial period and after a full inertial period. The initial boundary layer depth is around 8 meters.</i>
+<i> Figure 1: Turbulence and currents transmitted to the ocean during surface gravity wave forcing by (highly idealized) pressure forcing and without wind, as modeled by large eddy simulations. The left panel shows vertical velocity contours normalized by the maximum effective friction velocity, while the right panel shows horizontally-averaged currents after 1/8th an inertial period and after a full inertial period. The initial boundary layer depth is around 8 meters.</i>
 </p>
 
 ![vertical_velocity](figures/figure_3.png)

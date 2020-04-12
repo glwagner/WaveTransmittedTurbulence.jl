@@ -48,7 +48,7 @@ julia --project -e 'using Pkg; Pkg.instantiate()'
   
 5. Run the LESs of turbulence forced either by growing waves, or by pulses of wind, in section 3:
 
-  * LES of turbulence beneath growing waves:
+  * Run a LES of turbulence beneath growing waves (data from this LES is plotted in figure 1 above):
   
   ```
   julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq1.0e-06_Nh256_Nz256 --wave_amplitude 2 --case growing_waves

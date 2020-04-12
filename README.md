@@ -3,7 +3,7 @@
 ![wave-driven-turbulence](figures/figure_1.png)
 
 <p align="center">
-<i> Figure 1: Turbulence and currents transmitted to the ocean during the forced growth of a surface gravity wave field. (Left) vertical velocity normalized by the maximum effective friction velocity, (right) horizontally-averaged currents after 1/8th an inertial period and after a full inertial period.</i>
+<i> Figure 1: Turbulence and currents transmitted to the ocean during surface gravity wave forcing by (highly idealized) pressure forcing, in the absence of wind. The left panel shows vertical velocity contours normalized by the maximum effective friction velocity, while the right panel shows horizontally-averaged currents after 1/8th an inertial period and after a full inertial period. The initial boundary layer depth is around 8 meters.</i>
 </p>
 
 ![vertical_velocity](figures/figure_3.png)

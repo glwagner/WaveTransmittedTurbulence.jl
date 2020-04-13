@@ -8,7 +8,7 @@ fs = 12
 plt.rc("font"; family="serif", serif=["Computer Modern Roman"], size=fs)
 plt.rc("text", usetex=true)
 
-     run_name = "growing_waves_Qb1.0e-09_a2.0_k6.3e-02_T4.0_Nh256_Nz256" 
+     run_name = "growing_waves_Qb1.0e-09_Nsq1.0e-06_init0.3_a2.0_k6.3e-02_T4.0_Nh256_Nz256"
 run_directory = joinpath(@__DIR__, "..", "data", run_name)
      run_path = joinpath(run_directory, run_name * "_fields_part1.jld2")
 

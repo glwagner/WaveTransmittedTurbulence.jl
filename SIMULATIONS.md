@@ -18,7 +18,7 @@ git clone https://github.com/glwagner/WaveTransmittedTurbulence.git; cd WaveTran
 julia --project -e 'using Pkg; Pkg.instantiate()'
 ```
 
-You are now ready to run LES.
+You are now ready to run LES. If you have a nVidia GPU and a working installing of CUDA, the LES will run on the GPU.
 
 # Section 3: turbulence and near-inertial motion forced by growing surface waves
 

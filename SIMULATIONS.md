@@ -22,7 +22,7 @@ You are now ready to run LES. If you have a nVidia GPU and a working installing 
 
 # Section 3: turbulence and near-inertial motion forced by growing surface waves
 
-The LES reported in section 3 are initialized from a spinup simulation.
+The LES reported in section 3 are initialized from a spinup simulation. We consider turbulence beneath growing surface wave fields and turbulence forced by the equivalent _surface_ stresses for 1 meter and 2 meter amplitude wave fields that rapidly grow over 4 hours.
 
 ## Spin up
 

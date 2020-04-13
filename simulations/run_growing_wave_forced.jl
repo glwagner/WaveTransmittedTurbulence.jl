@@ -31,9 +31,16 @@ function parse_command_line_arguments()
             default = "free_convection_Qb1.0e-09_Nsq1.0e-06_Nh256_Nz256"
             arg_type = String
 
-        "--spinup_part"
+        "--spinup-part"
             help = """The spinup file to look in for an initial condition.
                       0 chooses the largest part number in the spinup directory."""
+            default = 0
+            arg_type = Int
+
+        "--spinup-save-point"
+            help = """The save point within the indicated spinup file to use for
+                      an initial condition. 0 chooses the last iteration saved in the
+                      indicated spinup file."""
             default = 0
             arg_type = Int
 
@@ -46,12 +53,12 @@ function parse_command_line_arguments()
             default = "growing_waves"
             arg_type = String
 
-        "--wave_amplitude"
+        "--wave-amplitude"
             help = "The equilibrium wave field amplitude in meters."
             default = 2.0
             arg_type = Float64
 
-        "--growth_time_scale"
+        "--growth-time-scale"
             help = "The time-scale for wave growth in hours."
             default = 4.0
             arg_type = Float64
@@ -83,7 +90,7 @@ spinup_directory = joinpath(@__DIR__, "..", "data", spinup_name)
 filenames = cd(() -> glob("*fields*"), spinup_directory)
 sortby(filename) = parse(Int, filename[length(spinup_name)+13:end-5])
 sort!(filenames, by=sortby)
-part = args["spinup_part"] == 0 ? length(filenames) : args["spinup_part"]
+part = args["spinup-part"] == 0 ? length(filenames) : args["spinup-part"]
 
 filepath = joinpath(@__DIR__, "..", "data", spinup_name, filenames[part])
 
@@ -91,9 +98,9 @@ filepath = joinpath(@__DIR__, "..", "data", spinup_name, filenames[part])
 grid = get_grid(filepath)
 
 # # Stokes drift parameters
-      wavenumber = 2π / args["wavelength"]
-   wave_amplitude = args["wave_amplitude"]
-growth_time_scale = args["growth_time_scale"] * hour
+       wavenumber = 2π / args["wavelength"]
+   wave_amplitude = args["wave-amplitude"]
+growth_time_scale = args["growth-time-scale"] * hour
 
 case = args["case"]
 
@@ -122,6 +129,8 @@ elseif case == "surface_stress_with_waves"
 
     u_bcs = UVelocityBoundaryConditions(grid, top = BoundaryCondition(Flux, Qᵘ))
 
+else
+    error("There is no such case '$case'!")
 end
    
 # Boundary conditions
@@ -156,7 +165,10 @@ model = IncompressibleModel(       architecture = has_cuda() ? GPU() : CPU(),
                                         forcing = ModelForcing(u=u_forcing, v=v_forcing, w=w_forcing, b=b_forcing)
                            )
 
-set_from_file!(model, filepath)
+# Use spinup-save-point command line argument to determine initial condition
+iterations = get_iters(filepath)
+save_point = args["spinup-save-point"] == 0 ? length(iterations) : args["spinup-save-point"]
+set_from_file!(model, filepath, i=save_point)
 
 # # Prepare the simulation
 
@@ -174,7 +186,8 @@ simulation = Simulation(model, Δt=wizard, stop_time=stop_time, progress_frequen
 
 # # Specify output
 
-spinup_time = get_final_time(filepath) * f / 2π # Final spinup time / initial sim time, in inertial periods
+spinup_iteration = iterations[save_point]
+spinup_time = get_time(filepath, spinup_iteration) * f / 2π # Final spinup time / initial sim time, in inertial periods
 
 prefix = @sprintf("%s_Qb%.1e_Nsq%.1e_init%.1f_a%.1f_k%.1e_T%.1f_Nh%d_Nz%d", case,
                   get_parameter(filepath, "boundary_conditions", "Qᵇ"),

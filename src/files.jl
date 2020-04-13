@@ -2,7 +2,6 @@ function get_iters(filename)
     file = jldopen(filename)
     iters = parse.(Int, keys(file["timeseries/t"]))
     close(file)
-
     return iters
 end
 
@@ -96,13 +95,12 @@ function get_parameter(filename, group, parameter_name)
     return parameter
 end
 
-function set_from_file!(model, filename; i=nothing)
+function set_from_file!(model, filename; i=length(get_iters(filename)))
 
     file = jldopen(filename)
 
     # Load initial condition from file
-    iter = i === nothing ? parse(Int, keys(file["timeseries/t"])[end]) :
-                           parse(Int, keys(file["timeseries/t"])[i])
+    iter = parse(Int, keys(file["timeseries/t"])[i])
     
     u₀ = file["timeseries/u/$iter"]
     v₀ = file["timeseries/v/$iter"]
@@ -121,12 +119,19 @@ function set_from_file!(model, filename; i=nothing)
 
 end
 
-function extract_averages_timeseries(directory)
+function extract_averages_timeseries(directory; part=0)
+
+    part > 9 && error("Part must be less than 10.")
+
     filenames = cd(() -> glob("*fields*"), directory)
+    sortby(filename) = parse(Int, filename[end-5:end-5])
+    sort!(filenames, by=sortby)
+    part = part == 0 ? length(filenames) : part
 
     t, U, V, B, Bz, w², E = [[] for i=1:7]
 
-    filepath = joinpath(directory, filenames[1])
+    @show filepath = joinpath(directory, filenames[part])
+
     grid = get_grid(filepath)
 
     for filename in filenames

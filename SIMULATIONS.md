@@ -18,6 +18,8 @@ git clone https://github.com/glwagner/WaveTransmittedTurbulence.git; cd WaveTran
 julia --project -e 'using Pkg; Pkg.instantiate()'
 ```
 
+You are now ready to run LES.
+
 # Section 3: turbulence and near-inertial motion forced by growing surface waves
 
 The LES reported in section 3 are initialized from a spinup simulation.

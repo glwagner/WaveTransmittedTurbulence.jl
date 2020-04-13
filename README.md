@@ -1,9 +1,17 @@
 # WaveTransmittedTurbulence
 
-![vertical_velocity](figures/vertical_velocity_initial_conditions.png)
+Currents and turbulence beneath growing surface gravity waves.
+
+![wave-driven-turbulence](figures/figure_1.png)
 
 <p align="center">
-<i> Image: vertical velocity contours in simulations of ocean surface boundary layer turbulence driven by wind both without (left) and with (center and right) surface waves.</i>
+<i> Figure 1: Turbulence and currents transmitted to the ocean during the idealized, forced growth of a surface gravity wave field in the absence of turbulent surface stresses, as modeled by a large eddy simulation. The left panel shows vertical velocity contours normalized by the maximum effective friction velocity, while the right panel shows horizontally-averaged currents after 1/8th an inertial period and after a full inertial period. The initial boundary layer depth is around 8 meters.</i>
+</p>
+
+![vertical_velocity](figures/figure_3.png)
+
+<p align="center">
+<i> Figure 3: Vertical velocity contours in simulations of ocean surface boundary layer turbulence driven by wind both without waves (left) and beneath steady waves (center and right). The center panel reproduces results from McWilliams et al., "Langmuir Turbulence in the Ocean," JFM (1997).</i>
 </p>
 
 This repository contains [Julia](https://julialang.org) code for reproducing the simulation data and plots in 
@@ -32,23 +40,63 @@ git clone https://github.com/glwagner/WaveTransmittedTurbulence.git; cd WaveTran
 julia --project -e 'using Pkg; Pkg.instantiate()'
 ```
 
-4. Run the spinup simulation for section 3 (alll simulations will take some time with a high-octane GPU):
+4. Run the spinup LES for section 3 (all simulations will take some time to complete even with a high-octane GPU):
 
-  * `julia --project simulations/run_free_convection.jl --buoyancy_flux 1e-9 --buoyancy_gradient 2e-6 --Nh 256 --Nz 256`
+  ```
+  julia --project simulations/run_free_convection.jl --buoyancy_flux 1e-9 --buoyancy_gradient 1e-6 --Nh 256 --Nz 256
+  ```
   
-5. Run the simulations of turbulence forced either by growing waves, or by pulses of wind, in section 3:
+5. Run the LESs of turbulence forced either by growing waves, or by pulses of wind, in section 3:
 
-  * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq2.0e-06_Nh256_Nz256 --case growing_waves`
-  * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq2.0e-06_Nh256_Nz256 --case surface_stress_no_waves`
-  * `julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq2.0e-06_Nh256_Nz256 --case surface_stress_with_waves`
+  * Run a LES of turbulence beneath growing waves (data from this LES is plotted in figure 1 above):
+  
+  ```
+  julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq1.0e-06_Nh256_Nz256 --wave_amplitude 2 --case growing_waves
+  ```
+  
+  * Run a LES of turbulence beneath a wind stress pulse, with no waves:
+  
+  ```
+  julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq1.0e-06_Nh256_Nz256 --wave_amplitude 2 --case surface_stress_no_waves
+  ```
+  
+  * Run a LES of turbulence beneath a wind stress pulse, with steady waves overhead:
+  
+  ```
+  julia --project simulations/run_growing_wave_forced.jl --spinup free_convection_Qb1.0e-09_Nsq1.0e-06_Nh256_Nz256 --wave_amplitude 2 --case surface_stress_with_waves
+  ```
  
 6. Perform the initial condition study in section 4:
 
-  *  `julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 0`
-  *  `julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 1`
-  *  `julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition excited --wave_multiplier 1`
-  *  `julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 4`
-  *  `julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition excited --wave_multiplier 4`
+  * Run the 'control' LES forced by wind stress with no waves:
+  
+  ```
+  julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 0
+  ```
+  
+  * Run the 'excited, 1x' LES forced by wind stress with steady waves and 'excited' initial conditions. This LES reproduces results from McWilliams et al., "Langmuir turbulence in the ocean," JFM (1997):
+  
+  ```
+  julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 1
+  ```
+  
+  * Run the 'resting, 1x' LES forced by wind stress with steady waves and 'excited' initial conditions:
+  
+  ```
+  julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition excited --wave_multiplier 1
+  ```
+  
+  * Run the 'excited, 4x' LES, similar to 'excited, 1x' except with a 4x stronger wave field:
+  
+  ```
+  julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 4
+  ```
+  
+  * Run the 'resting, 4x' LES, similar to 'resting, 1x' except with a 4x stronger wave field:
+  
+  ```
+  julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition excited --wave_multiplier 4
+  ```
 
 ## A few details
 

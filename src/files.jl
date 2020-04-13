@@ -95,6 +95,9 @@ function get_parameter(filename, group, parameter_name)
     return parameter
 end
 
+get_multiple_parameters(filename, group, names...) =
+    Tuple(get_parameter(filename, group, name) for name in names)
+
 function set_from_file!(model, filename; i=length(get_iters(filename)))
 
     file = jldopen(filename)
@@ -130,7 +133,7 @@ function extract_averages_timeseries(directory; part=0)
 
     t, U, V, B, Bz, w², E = [[] for i=1:7]
 
-    @show filepath = joinpath(directory, filenames[part])
+    filepath = joinpath(directory, filenames[part])
 
     grid = get_grid(filepath)
 
@@ -164,5 +167,7 @@ function extract_averages_timeseries(directory; part=0)
     w² = w²[ii]
      E = E[ii]
 
-    return t, U, V, B, Bz, w², E
+    S = [sqrt.(Ui.^2 .+ Vi.^2) for (Ui, Vi) in zip(U, V)]
+
+    return t, U, V, S, B, Bz, w², E
 end

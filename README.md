@@ -73,7 +73,7 @@ Typing
 julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition resting --wave_multiplier 1
 ```
 
-will reproduce results from McWilliams et al., "Langmuir turbulence in the ocean," JFM (1997) --- modulo a few important details that are discussed in the paper.
+will reproduce results from _McWilliams et al., "Langmuir turbulence in the ocean," JFM (1997)_ --- modulo a few important details that are discussed in the paper.
 
 # Corresponding
 

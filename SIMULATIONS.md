@@ -45,7 +45,7 @@ julia --project simulations/run_growing_wave_forced.jl  --wave_amplitude 1 --cas
 and
 
 ```
-julia --project simulations/run_growing_wave_forced.jl  --wave_amplitude 1 --case growing_waves
+julia --project simulations/run_growing_wave_forced.jl  --wave_amplitude 2 --case growing_waves
 ```
 
 ## Turbulence forced by surface stress

@@ -28,7 +28,7 @@ function parse_command_line_arguments()
     @add_arg_table! settings begin
         "--spinup"
             help = "The name of the directory to look for spinup data."
-            default = "free_convection_Qb1.0e-09_Nsq2.0e-06_Nh32_Nz32"
+            default = "free_convection_Qb1.0e-09_Nsq1.0e-06_Nh256_Nz256"
             arg_type = String
 
         "--spinup_part"

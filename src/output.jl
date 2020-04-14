@@ -55,7 +55,7 @@ function horizontal_averages(model)
     # Define horizontal averages
     U = HorizontalAverage(u)
     V = HorizontalAverage(v)
-    #e = TurbulentKineticEnergy(model)
+    e = TurbulentKineticEnergy(model)
 
     U² = HorizontalAverage(u^2, scratch)
     V² = HorizontalAverage(v^2, scratch)
@@ -67,7 +67,7 @@ function horizontal_averages(model)
     primitive_averages = (
                   U = model -> U(model),
                   V = model -> V(model),
-                  #E = model -> e(model),
+                  E = model -> e(model),
 
                  U² = model -> U²(model),
                  V² = model -> V²(model),

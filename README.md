@@ -35,7 +35,9 @@ julia --project simulations/run_free_convection.jl
 runs a simulation of free convection at a default low resolution of `32 x 32 x 32` and default surface buoyancy flux `1e-9 m^2 / s^3`, which will complete on some laptops in a matter of minutes.
 The simulation will execute on a GPU if one is available.
 
-Some parameters can be specified on the command line.
+### Free convection script
+
+Some parameters for the free convection run can be specified on the command line.
 To see these, type
 
 ```
@@ -44,6 +46,34 @@ julia --project simulations/run_free_convection.jl --help
 
 To make more substantial changes to the setup, edit the script `simulations/run_free_convection.jl` directly.
 
+### Growing waves script
+
+The 'growing waves' simulations reported in section 3 are initialized from the free convection run.
+Type
+
+```
+julia --project simulations/run_growing_waves.jl --help
+```
+
+To see options for the 'growing waves' run script.
+In general, the option `--spinup` must be specified to initialize the simulation. The default `--spinup` initializes from
+a 256^3 simulation reported in the paper.
+
+### Initial conditions study script
+
+To see options for the 'initial conditions study' run script, type
+
+```
+julia --project simulations/run_initial_conditions_study.jl --help
+```
+
+Typing 
+
+```
+julia --project simulations/run_initial_conditions_study.jl --Nh 256 --Nz 256 --initial_condition excited --wave_multiplier 1
+```
+
+will reproduce results from _McWilliams et al., "Langmuir turbulence in the ocean," JFM (1997)_ --- modulo a few important details that are discussed in the paper.
 
 # Corresponding
 

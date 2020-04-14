@@ -4,9 +4,9 @@ using Oceananigans.Buoyancy: g_Earth
 
 mplot3d = pyimport("mpl_toolkits.mplot3d")
 
-     run_name = "free_convection_Qb1.0e-09_Nsq1.0e-06_Nh256_Nz256"
+     run_name = "free_convection_Qb5.0e-10_Nsq1.0e-06_stop0.5_Nh128_Nz128"
 run_directory = joinpath(@__DIR__, "..", "data", run_name)
-     run_path = joinpath(run_directory, run_name * "_fields_part1.jld2")
+     run_path = joinpath(run_directory, run_name * "_fields.jld2")
 
 file = jldopen(run_path)
 
@@ -18,11 +18,12 @@ grid = get_grid(run_path)
 
 iters = get_iters(run_path)
 
-t, U, V, B, Bz, w², E = extract_averages_timeseries(run_directory, part=1)
+t, U, V, S, B, Bz, w², E = extract_averages_timeseries(run_directory, part=1)
 
 #####
 ##### Final profiles
 #####
+
 
 fig, axs = subplots(ncols=4, sharey=true, figsize=(10, 4))
 

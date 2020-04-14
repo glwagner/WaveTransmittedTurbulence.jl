@@ -48,7 +48,7 @@ ulevels = vcat([-umax], -ulim:2ulim/11:ulim, [umax])
 view_elev = 50
 
 depth = 2.0
-bottom = 64
+bottom = 48
 
 i = 1
 j = 1

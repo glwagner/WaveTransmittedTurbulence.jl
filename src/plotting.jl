@@ -74,3 +74,27 @@ function meshgrid(x, y)
 end
 
 get_position(ax) = [b for b in ax.get_position().bounds]
+
+function plot_profiles!(axs, grid, B, Bz, S, w²; label="", kwargs...)
+    if B != nothing
+        sca(axs[1])
+        plot(B[2:end-1], grid.zC; label=label, kwargs...)
+    end
+
+    if Bz != nothing
+        sca(axs[2])
+        plot(Bz[2:end-1], grid.zF[2:end-1]; kwargs...)
+    end
+
+    if S != nothing
+        sca(axs[3])
+        plot(S[2:end-1],  grid.zC; kwargs...)
+    end
+
+    if w² != nothing
+        sca(axs[4])
+        plot(w²[2:end-1], grid.zF; kwargs...)
+    end
+
+    return nothing
+end

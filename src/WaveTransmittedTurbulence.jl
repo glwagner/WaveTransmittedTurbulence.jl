@@ -35,6 +35,7 @@ export
     get_wind_stress,
     get_surface_wave_parameters,
     get_parameter,
+    get_multiple_parameters,
     set_from_file!,
     extract_averages_timeseries,
 
@@ -59,6 +60,7 @@ export
     axes_grid1,
     meshgrid,
     get_position,
+    plot_profiles!,
     
     # reexport from Oceananigans / CUDAapi
     @hascuda,

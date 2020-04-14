@@ -8,16 +8,14 @@ fs = 12
 plt.rc("font"; family="serif", serif=["Computer Modern Roman"], size=fs)
 plt.rc("text", usetex=true)
 
-     run_name = "growing_waves_Qb1.0e-09_a2.0_k6.3e-02_T4.0_Nh256_Nz256" 
-     #run_name = "surface_stress_no_waves_Qb1.0e-09_a2.0_k6.3e-02_T4.0_Nh256_Nz256" 
-     #run_name = "surface_stress_no_waves_Qb1.0e-09_a2.0_k6.3e-02_T4.0_Nh256_Nz256" 
+     run_name = "growing_waves_Qb1.0e-09_Nsq1.0e-06_init0.3_a2.0_k6.3e-02_T4.0_Nh256_Nz256"
 run_directory = joinpath(@__DIR__, "..", "data", run_name)
      run_path = joinpath(run_directory, run_name * "_fields_part1.jld2")
 
 file = jldopen(run_path)
 
    wave_amplitude = file["surface_waves/wave_amplitude"]
-      wavenumber = file["surface_waves/wavenumber"]
+       wavenumber = file["surface_waves/wavenumber"]
 growth_time_scale = file["surface_waves/growth_time_scale"]
                 f = file["coriolis/f"]
 
@@ -34,8 +32,7 @@ iters = get_iters(run_path)
 ##### 3D visualization
 #####
 
-#t, u, v, w, b = get_fields(run_path, iters[1])
-t, u, v, w, b = get_fields(run_path, iters[end])
+t, u, v, w, b = get_fields(run_path, iters[3])
 
 @show f * t / 2π
 

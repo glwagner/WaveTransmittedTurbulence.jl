@@ -22,14 +22,15 @@ You are now ready to run LES. If you have a nVidia GPU and a working installing 
 
 # Section 3: turbulence and near-inertial motion forced by growing surface waves
 
-The LES reported in section 3 are initialized from a spinup simulation. We consider turbulence beneath growing surface wave fields and turbulence forced by the equivalent _surface_ stresses for 1 meter and 2 meter amplitude wave fields that rapidly grow over 4 hours.
+The LES reported in section 3 are initialized from a spinup simulation. 
+We consider turbulence beneath growing surface wave fields and turbulence forced by the equivalent _surface_ stresses for 1 meter and 2 meter amplitude wave fields that rapidly grow over 4 hours.
 
 ## Spin up
 
 To run the spinup simulation, find a computer with high-powered GPU, complete the 3 steps above, and then type
 
 ```
-julia --project simulations/run_free_convection.jl --buoyancy_flux 1e-9 --buoyancy_gradient 1e-6 --Nh 256 --Nz 256
+julia --project simulations/run_free_convection.jl --Nh 256 --Nz 256
 ```
 
 ## Turbulence forced by growing waves

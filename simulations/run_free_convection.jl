@@ -44,12 +44,12 @@ function parse_command_line_arguments()
         "--buoyancy_gradient"
             help = """The buoyancy gradient, or the square of the Brunt-Vaisala frequency N²,
                       at the start of the simulation in units s⁻²."""
-            default = 2e-6
+            default = 1e-6
             arg_type = Float64
 
         "--inertial_periods"
             help = "The number of inertial periods for which the simulation should be run."
-            default = 1.0
+            default = 0.25
             arg_type = Float64
 
         "--device", "-d"

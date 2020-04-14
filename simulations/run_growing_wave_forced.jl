@@ -55,7 +55,7 @@ function parse_command_line_arguments()
 
         "--wave-amplitude"
             help = "The equilibrium wave field amplitude in meters."
-            default = 2.0
+            default = 1.0
             arg_type = Float64
 
         "--growth-time-scale"

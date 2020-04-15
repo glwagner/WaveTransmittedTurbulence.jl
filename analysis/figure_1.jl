@@ -4,21 +4,14 @@ using Oceananigans.Buoyancy: g_Earth
 
 mplot3d = pyimport("mpl_toolkits.mplot3d")
 
-fs = 12
+fs = 14
 plt.rc("font"; family="serif", serif=["Computer Modern Roman"], size=fs)
 plt.rc("text", usetex=true)
 
-is = ((1, 2, 3), (1, 2))
-
-#for (j, part) in enumerate((1, 2))
-#for ii in is[j]
-part = 2
-ii = 2
-
      #run_name = "growing_waves_Qb1.0e-09_Nsq1.0e-06_init0.3_a2.0_k6.3e-02_T4.0_Nh256_Nz256"
      run_name = "growing_waves_Qb5.0e-10_Nsq1.0e-06_init0.5_a2.0_k6.3e-02_T4.0_Nh256_Nz256"
-#         part = 1
-#            i = 1
+         part = 1
+           ii = 3
 
 run_directory = joinpath(@__DIR__, "..", "data", run_name)
      run_path = joinpath(run_directory, run_name * "_fields_part$part.jld2")
@@ -50,7 +43,7 @@ t, u, v, w, b = get_fields(run_path, iters[ii])
 umax = maximum(abs, u/u★)
 @show wmax = maximum(abs, w/u★)
 
-wlim = 0.8 * wmax #1 #0.3 #19 * wmax / 20#1.5
+wlim = 1.3
 wlevels = vcat([-wmax], -wlim:2wlim/11:wlim, [wmax])
 
 ulim = umax/2
@@ -110,13 +103,9 @@ w_im_y = ax1.contourf(XC_y, w_xz / u★, ZF_y,
 w_im_z = ax1.contourf(XC_z, YC_z, w_xy / u★, 
                       zdir="z", levels=wlevels, offset=z_offset, cmap="RdBu_r", vmin=-wlim, vmax=wlim)
 
-#skip = 20
-#q_z = ax1.quiver(XC_z[1:skip:end, 1:skip:end], YC_z[1:skip:end, 1:skip:end], 
-#                 u_xy[1:skip:end, 1:skip:end], v_xy[1:skip:end, 1:skip:end], zdir="z", offset=z_offset)
-
 ax1.view_init(elev=view_elev, azim=-135)
 
-cb = colorbar(w_im_x, ax=ax1, ticks=-wlim:0.5:wlim)
+cb = colorbar(w_im_x, ax=ax1, ticks=-1.2:0.4:1.2) #wlim:0.4:wlim)
 
 pos_cb = get_position(cb.ax)
 
@@ -138,9 +127,9 @@ ax1.set_xlabel("\$ x \$ (m)", labelpad=12.0)
 ax1.set_ylabel("\$ y \$ (m)", labelpad=12.0)
 ax1.set_zlabel("\$ z \$ (m)", labelpad=12.0)
 
-cb.ax.set_title(L"w \, / \, \max(u_\star)", pad=10.0)
+cb.ax.set_title(L"w \, / \max(u_\star)", pad=10.0)
 
-t, U, V, B, W² = extract_averages_timeseries(run_directory)
+t, U, V, B, W² = calculate_horizontal_average_timeseries(run_directory)
 
 i₁ = 2
 i₂ = 5
@@ -168,7 +157,4 @@ ax2.set_ylabel(L"z \, (\mathrm{m})", labelpad=12.0)
 
 removespines(ax2, "right", "top")
 
-#savefig(joinpath(@__DIR__, "..", "figures", "figure_1_$(part)_$ii.png"), dpi=480)
-
-#end
-#end
+savefig(joinpath(@__DIR__, "..", "figures", "figure_1.png"), dpi=480)

@@ -38,7 +38,7 @@ function parse_command_line_arguments()
         "--buoyancy_flux", "-Q"
             help = """The surface buoyancy flux that drives convection in units of m² s⁻³. 
                       A positive buoyancy flux implies cooling."""
-            default = 1e-9
+            default = 5e-10
             arg_type = Float64
 
         "--buoyancy_gradient"
@@ -49,7 +49,7 @@ function parse_command_line_arguments()
 
         "--inertial_periods"
             help = "The number of inertial periods for which the simulation should be run."
-            default = 0.25
+            default = 0.5
             arg_type = Float64
 
         "--device", "-d"
@@ -105,7 +105,7 @@ b_bcs = TracerBoundaryConditions(grid, top = BoundaryCondition(Gradient, dbdz_su
 # # Sponge layer
 
 τ = 60  # [s] Sponge layer damping time-scale
-δ = 8   # [m] Sponge layer width
+δ = 4   # [m] Sponge layer width
 
 u_forcing = ParameterizedForcing(Fu, (δ=δ, τ=τ))
 v_forcing = ParameterizedForcing(Fv, (δ=δ, τ=τ))

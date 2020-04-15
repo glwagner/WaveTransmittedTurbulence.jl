@@ -172,7 +172,7 @@ set_from_file!(model, filepath, i=save_point)
 
 # # Prepare the simulation
 
-stop_time = 2π / f
+stop_time = 2 * 2π / f
 
 # Adaptive time-stepping
 wizard = TimeStepWizard(       cfl = 0.1,

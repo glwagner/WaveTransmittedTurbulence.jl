@@ -28,7 +28,7 @@ function parse_command_line_arguments()
     @add_arg_table! settings begin
         "--spinup"
             help = "The name of the directory to look for spinup data."
-            default = "free_convection_Qb1.0e-09_Nsq1.0e-06_stop0.3_Nh256_Nz256"
+            default = "free_convection_Qb5.0e-10_Nsq1.0e-06_stop0.5_Nh256_Nz256"
             arg_type = String
 
         "--spinup-part"
@@ -235,7 +235,7 @@ simulation.output_writers[:fields] = field_writer
 
 # Horizontal averages
 averages_writer = JLD2OutputWriter(model, horizontal_averages(model); force=true, init=init,
-                                   interval = 15minute, 
+                                   interval = 10minute,
                                         dir = data_directory,
                                      prefix = prefix * "_averages")
 

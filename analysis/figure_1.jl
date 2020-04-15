@@ -8,9 +8,20 @@ fs = 12
 plt.rc("font"; family="serif", serif=["Computer Modern Roman"], size=fs)
 plt.rc("text", usetex=true)
 
-     run_name = "growing_waves_Qb1.0e-09_Nsq1.0e-06_init0.3_a2.0_k6.3e-02_T4.0_Nh256_Nz256"
+is = ((1, 2, 3), (1, 2))
+
+#for (j, part) in enumerate((1, 2))
+#for ii in is[j]
+part = 2
+ii = 2
+
+     #run_name = "growing_waves_Qb1.0e-09_Nsq1.0e-06_init0.3_a2.0_k6.3e-02_T4.0_Nh256_Nz256"
+     run_name = "growing_waves_Qb5.0e-10_Nsq1.0e-06_init0.5_a2.0_k6.3e-02_T4.0_Nh256_Nz256"
+#         part = 1
+#            i = 1
+
 run_directory = joinpath(@__DIR__, "..", "data", run_name)
-     run_path = joinpath(run_directory, run_name * "_fields_part1.jld2")
+     run_path = joinpath(run_directory, run_name * "_fields_part$part.jld2")
 
 file = jldopen(run_path)
 
@@ -32,14 +43,14 @@ iters = get_iters(run_path)
 ##### 3D visualization
 #####
 
-t, u, v, w, b = get_fields(run_path, iters[3])
+t, u, v, w, b = get_fields(run_path, iters[ii])
 
 @show f * t / 2π
 
 umax = maximum(abs, u/u★)
 @show wmax = maximum(abs, w/u★)
 
-wlim = 1.5
+wlim = 0.8 * wmax #1 #0.3 #19 * wmax / 20#1.5
 wlevels = vcat([-wmax], -wlim:2wlim/11:wlim, [wmax])
 
 ulim = umax/2
@@ -69,6 +80,8 @@ u_xy = u[2:end-1, 2:end-1, k+1]
 u_xz = u[2:end-1, j, k_deep+1:k+1]
 u_yz = u[i, 2:end-1, k_deep+1:k+1]
 
+v_xy = v[2:end-1, 2:end-1, k+1]
+
 close("all")
 
 fig = figure(figsize=(14, 5))
@@ -96,6 +109,10 @@ w_im_y = ax1.contourf(XC_y, w_xz / u★, ZF_y,
 
 w_im_z = ax1.contourf(XC_z, YC_z, w_xy / u★, 
                       zdir="z", levels=wlevels, offset=z_offset, cmap="RdBu_r", vmin=-wlim, vmax=wlim)
+
+#skip = 20
+#q_z = ax1.quiver(XC_z[1:skip:end, 1:skip:end], YC_z[1:skip:end, 1:skip:end], 
+#                 u_xy[1:skip:end, 1:skip:end], v_xy[1:skip:end, 1:skip:end], zdir="z", offset=z_offset)
 
 ax1.view_init(elev=view_elev, azim=-135)
 
@@ -151,4 +168,7 @@ ax2.set_ylabel(L"z \, (\mathrm{m})", labelpad=12.0)
 
 removespines(ax2, "right", "top")
 
-savefig(joinpath(@__DIR__, "..", "figures", "figure_1.png"), dpi=480)
+#savefig(joinpath(@__DIR__, "..", "figures", "figure_1_$(part)_$ii.png"), dpi=480)
+
+#end
+#end

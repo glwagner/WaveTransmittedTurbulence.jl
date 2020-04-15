@@ -33,9 +33,9 @@ function plot_growing_wave_profiles(suffix, part; i=nothing)
      τ = wave_amplitude^2 * √(g_Earth * wavenumber) / (2 * growth_time_scale)
     u★ = sqrt(τ)
 
-    t, U_w, V_w, S_w, B_w, Bz_w, w²_w, E_w = extract_averages_timeseries(waves_directory)
-    t, U_s, V_s, S_s, B_s, Bz_s, w²_s, E_s = extract_averages_timeseries(stress_directory)
-    t, U_b, V_b, S_b, B_b, Bz_b, w²_b, E_b = extract_averages_timeseries(both_directory)
+    t, U_w, V_w, S_w, B_w, Bz_w, w²_w, E_w = calculate_horizontal_average_timeseries(waves_directory)
+    t, U_s, V_s, S_s, B_s, Bz_s, w²_s, E_s = calculate_horizontal_average_timeseries(stress_directory)
+    t, U_b, V_b, S_b, B_b, Bz_b, w²_b, E_b = calculate_horizontal_average_timeseries(both_directory)
 
     #####
     ##### Final profiles

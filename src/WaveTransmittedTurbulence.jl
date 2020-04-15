@@ -37,7 +37,8 @@ export
     get_parameter,
     get_multiple_parameters,
     set_from_file!,
-    extract_averages_timeseries,
+    calculate_horizontal_average_timeseries,
+    collect_horizontal_averages,
 
     # les.jl
     SurfaceEnhancedModelConstant,
@@ -111,7 +112,6 @@ include("progress_messenger.jl")
 include("stokes_drift.jl")
 
 # Don't try to load PyPlot when we don't have a working python.
-#=
 withplots = try
     using PyPlot, PyCall
     include("plotting.jl")
@@ -119,7 +119,6 @@ withplots = try
 catch
     false
 end
-=#
 
 macro haspyplot(expr)
     return withplots ? :($(esc(expr))) : :(nothing)

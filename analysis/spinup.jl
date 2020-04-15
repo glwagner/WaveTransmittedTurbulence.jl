@@ -18,7 +18,7 @@ grid = get_grid(run_path)
 
 iters = get_iters(run_path)
 
-t, U, V, S, B, Bz, w², E = extract_averages_timeseries(run_directory, part=1)
+t, U, V, S, B, Bz, w², E = calculate_horizontal_average_timeseries(run_directory, part=1)
 
 #####
 ##### Final profiles

@@ -120,9 +120,10 @@ function set_from_file!(model, filename; i=length(get_iters(filename)))
     model.velocities.w.data.parent .= array_type(w₀)
     model.tracers.b.data.parent .= array_type(b₀)
 
+    return nothing
 end
 
-function extract_averages_timeseries(directory; part=0)
+function calculate_horizontal_average_timeseries(directory; part=0)
 
     part > 9 && error("Part must be less than 10.")
 
@@ -170,4 +171,41 @@ function extract_averages_timeseries(directory; part=0)
     S = [sqrt.(Ui.^2 .+ Vi.^2) for (Ui, Vi) in zip(U, V)]
 
     return t, U, V, S, B, Bz, w², E
+end
+
+function collect_horizontal_averages(filename)
+    iters = get_iters(filename)
+    grid = get_grid(filename)
+
+    cell_quantity_names = (:U, :V, :b, :U², :V², :E, :νₑ, :κₑ_b)
+    cell_quantities = NamedTuple{cell_quantity_names}(Tuple(zeros(grid.Nz, length(iters)) 
+                                                            for i = 1:length(cell_quantity_names)))
+
+    face_quantity_names = (:W², :W³, :wu, :wv, :wb, :τ₁₃, :τ₂₃, :τ₃₃, :q₃_b)
+    face_quantities = NamedTuple{face_quantity_names}(Tuple(zeros(grid.Nz+1, length(iters))
+                                                            for i = 1:length(face_quantity_names)))
+
+    t = zeros(length(iters))
+
+    file = jldopen(filename)
+
+    for (j, iter) in enumerate(iters)
+        for i = 1:length(cell_quantities)
+            c = cell_quantities[i]
+            name = propertynames(cell_quantities)[i]
+            c[:, j] .= file["timeseries/$name/$iter"][:][2:end-1]
+        end
+
+        for i = 1:length(face_quantities)
+            f = face_quantities[i]
+            name = propertynames(face_quantities)[i]
+            f[:, j] .= file["timeseries/$name/$iter"][:][2:end]
+        end
+
+        t[j] = file["timeseries/t/$iter"]
+    end
+
+    close(file)
+
+    return merge((t=t,), cell_quantities, face_quantities)
 end

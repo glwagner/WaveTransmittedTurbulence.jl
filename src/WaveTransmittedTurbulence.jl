@@ -6,6 +6,14 @@ export
 
     # output.jl
     horizontal_averages,
+    FieldSlice,
+    FieldSlices,
+    XYSlice,
+    XYSlices,
+    YZSlice,
+    YZSlices,
+    XZSlice,
+    XZSlices,
 
     # plotting.jl
     make_plot,
@@ -86,6 +94,8 @@ using Oceananigans.SurfaceWaves: UniformStokesDrift
 using Oceananigans.Buoyancy: g_Earth
 
 using Oceananigans: @hascuda, Face, Cell
+
+using Oceananigans.Fields: xnodes, ynodes, znodes
 
 using GPUifyLoops: @loop, @launch
 

@@ -28,7 +28,7 @@ function parse_command_line_arguments()
     @add_arg_table! settings begin
         "--spinup"
             help = "The name of the directory to look for spinup data."
-            default = "free_convection_Qb5.0e-10_Nsq1.0e-06_stop0.5_Nh256_Nz256"
+            default = "free_convection_Qb5.0e-10_Nsq1.0e-06_stop0.5_Nh32_Nz32"
             arg_type = String
 
         "--spinup-part"
@@ -55,12 +55,17 @@ function parse_command_line_arguments()
 
         "--wave-amplitude"
             help = "The equilibrium wave field amplitude in meters."
-            default = 1.0
+            default = 2.0
             arg_type = Float64
 
         "--growth-time-scale"
             help = "The time-scale for wave growth in hours."
             default = 4.0
+            arg_type = Float64
+
+        "--inertial-periods"
+            help = "The number of inertial periods to run the simulation for."
+            default = 2.0
             arg_type = Float64
 
         "--wavelength"
@@ -172,7 +177,7 @@ set_from_file!(model, filepath, i=save_point)
 
 # # Prepare the simulation
 
-stop_time = 2 * 2π / f
+stop_time = 2π / f * args["inertial-periods"]
 
 # Adaptive time-stepping
 wizard = TimeStepWizard(       cfl = 0.1,
@@ -225,24 +230,38 @@ end
 fields_to_output = merge(model.velocities, model.tracers, (νₑ=model.diffusivities.νₑ,),
                          prefix_tuple_names(:κₑ, model.diffusivities.κₑ))
 
-field_writer = JLD2OutputWriter(model, FieldOutputs(fields_to_output); force=true, init=init,
-                                    interval = π / 2f, # every quarter period
-                                max_filesize = 2GiB,
-                                         dir = data_directory,
-                                      prefix = prefix * "_fields")
+simulation.output_writers[:fields] = JLD2OutputWriter(model, FieldOutputs(fields_to_output); 
+                                                             force = true, 
+                                                              init = init,
+                                                          interval = π / 2f, # every quarter period
+                                                      max_filesize = 2GiB,
+                                                               dir = data_directory,
+                                                            prefix = prefix * "_fields")
 
-simulation.output_writers[:fields] = field_writer
+
 
 # Horizontal averages
-averages_writer = JLD2OutputWriter(model, horizontal_averages(model); force=true, init=init,
-                                   interval = 10minute,
-                                        dir = data_directory,
-                                     prefix = prefix * "_averages")
+simulation.output_writers[:averages] = JLD2OutputWriter(model, horizontal_averages(model); 
+                                                           force = true, 
+                                                            init = init,
+                                                        interval = 10minute,
+                                                             dir = data_directory,
+                                                          prefix = prefix * "_averages")
 
-simulation.output_writers[:averages] = averages_writer
+# Two-dimensional slices
+yz_slices = YZSlices(fields_to_output, suffix="_yz", x=0)
+xz_slices = XZSlices(fields_to_output, suffix="_xz", y=0)
+xy_slices = XYSlices(fields_to_output, suffix="_xy", z=-2)
+
+simulation.output_writers[:slices] = JLD2OutputWriter(model, merge(yz_slices, xz_slices, xy_slices); 
+                                                             force = true, 
+                                                              init = init,
+                                                          interval = 10minute,
+                                                      max_filesize = 10GiB,
+                                                               dir = data_directory,
+                                                            prefix = prefix * "_slices")
 
 # # Run
-
 print_banner(simulation)
 
 run!(simulation)

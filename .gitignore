@@ -2,3 +2,5 @@
 *.png
 *.swp
 data
+*.gif
+*.DS_Store

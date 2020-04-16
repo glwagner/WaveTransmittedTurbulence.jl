@@ -56,7 +56,7 @@ function plot_3d!(fig, path, i)
     k = searchsortedfirst(grid.zF, -depth)
     k_deep = searchsortedfirst(grid.zF, -bottom)
 
-    x_offset, y_offset, z_offset = 0, 0, grid.zF[k]
+    x_offset, y_offset, z_offset = grid.Δx, grid.Δy, grid.zF[k]
 
     YC_x, ZF_x = meshgrid(grid.yC, grid.zF[k_deep:k])
     XC_y, ZF_y = meshgrid(grid.xC, grid.zF[k_deep:k])
@@ -95,6 +95,7 @@ fig = figure(figsize=(14, 5))
 
 for (j, i) in enumerate(iters)
     plot_3d!(fig, run_path, i)
-    savefig("three_d_$j.png", dpi=480)
+    name = @sprintf("langmuir_%03d.png", j)
+    savefig(name, dpi=480)
 end
 

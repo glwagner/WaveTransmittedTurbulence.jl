@@ -247,9 +247,9 @@ simulation.output_writers[:averages] = JLD2OutputWriter(model, horizontal_averag
                                                            force = true)
 
 # Two-dimensional slices
-yz_slices = YZSlices(fields_to_output, suffix="_yz", x=0)
-xz_slices = XZSlices(fields_to_output, suffix="_xz", y=0)
-xy_slices = XYSlices(fields_to_output, suffix="_xy", z=-2)
+yz_slices = YZSlices((w=model.velocities.w,), suffix = "_yz", x =  0)
+xz_slices = XZSlices((w=model.velocities.w,), suffix = "_xz", y =  0)
+xy_slices = XYSlices((w=model.velocities.w,), suffix = "_xy", z = -2)
 
 simulation.output_writers[:slices] = JLD2OutputWriter(model, merge(yz_slices, xz_slices, xy_slices);
                                                           interval = 1minute,

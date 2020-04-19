@@ -252,7 +252,7 @@ xz_slices = XZSlices((w=model.velocities.w,), suffix = "_xz", y =  0)
 xy_slices = XYSlices((w=model.velocities.w,), suffix = "_xy", z = -2)
 
 simulation.output_writers[:slices] = JLD2OutputWriter(model, merge(yz_slices, xz_slices, xy_slices);
-                                                          interval = 1minute,
+                                                          interval = 0.25minute,
                                                       max_filesize = 2GiB,
                                                             prefix = prefix * "_slices",
                                                                dir = data_directory,

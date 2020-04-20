@@ -28,7 +28,7 @@ function parse_command_line_arguments()
     @add_arg_table! settings begin
         "--spinup"
             help = "The name of the directory to look for spinup data."
-            default = "free_convection_Qb5.0e-10_Nsq1.0e-06_stop0.5_Nh32_Nz32"
+            default = "free_convection_Qb5.0e-10_Nsq1.0e-06_stop0.5_Nh256_Nz256"
             arg_type = String
 
         "--spinup-part"
@@ -230,36 +230,34 @@ end
 fields_to_output = merge(model.velocities, model.tracers, (νₑ=model.diffusivities.νₑ,),
                          prefix_tuple_names(:κₑ, model.diffusivities.κₑ))
 
-simulation.output_writers[:fields] = JLD2OutputWriter(model, FieldOutputs(fields_to_output); 
-                                                             force = true, 
-                                                              init = init,
+simulation.output_writers[:fields] = JLD2OutputWriter(model, FieldOutputs(fields_to_output);
                                                           interval = π / 2f, # every quarter period
                                                       max_filesize = 2GiB,
+                                                            prefix = prefix * "_fields",
                                                                dir = data_directory,
-                                                            prefix = prefix * "_fields")
-
-
+                                                              init = init,
+                                                             force = true)
 
 # Horizontal averages
-simulation.output_writers[:averages] = JLD2OutputWriter(model, horizontal_averages(model); 
-                                                           force = true, 
-                                                            init = init,
+simulation.output_writers[:averages] = JLD2OutputWriter(model, horizontal_averages(model);
                                                         interval = 10minute,
+                                                          prefix = prefix * "_averages",
                                                              dir = data_directory,
-                                                          prefix = prefix * "_averages")
+                                                            init = init,
+                                                           force = true)
 
 # Two-dimensional slices
-yz_slices = YZSlices(fields_to_output, suffix="_yz", x=0)
-xz_slices = XZSlices(fields_to_output, suffix="_xz", y=0)
-xy_slices = XYSlices(fields_to_output, suffix="_xy", z=-2)
+yz_slices = YZSlices((w=model.velocities.w,), suffix = "_yz", x =  0)
+xz_slices = XZSlices((w=model.velocities.w,), suffix = "_xz", y =  0)
+xy_slices = XYSlices((w=model.velocities.w,), suffix = "_xy", z = -2)
 
-simulation.output_writers[:slices] = JLD2OutputWriter(model, merge(yz_slices, xz_slices, xy_slices); 
-                                                             force = true, 
-                                                              init = init,
-                                                          interval = 10minute,
-                                                      max_filesize = 10GiB,
+simulation.output_writers[:slices] = JLD2OutputWriter(model, merge(yz_slices, xz_slices, xy_slices);
+                                                          interval = 0.25minute,
+                                                      max_filesize = 2GiB,
+                                                            prefix = prefix * "_slices",
                                                                dir = data_directory,
-                                                            prefix = prefix * "_slices")
+                                                              init = init,
+                                                             force = true)
 
 # # Run
 print_banner(simulation)

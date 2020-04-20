@@ -23,9 +23,9 @@ uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 
 [[BinDeps]]
 deps = ["Libdl", "Pkg", "SHA", "URIParser", "Unicode"]
-git-tree-sha1 = "66158ad56b4bf6cc8413b37d0b7bc52402682764"
+git-tree-sha1 = "46cf2c1668ad07aba5a9d331bdeea994a1f13856"
 uuid = "9e28174c-4ba2-5203-b857-d8d62c4213ee"
-version = "1.0.0"
+version = "1.0.1"
 
 [[BinaryProvider]]
 deps = ["Libdl", "SHA"]
@@ -63,9 +63,9 @@ uuid = "be33ccc6-a3ff-5ff2-a52e-74243cff1e17"
 version = "2.9.1"
 
 [[Cassette]]
-git-tree-sha1 = "f6a148cadd38ba328bd2c03442037ef801a6aa05"
+git-tree-sha1 = "03ea3a0cc6342bc2157c896b2908757f9c89b9da"
 uuid = "7057c7e9-c182-5462-911a-8362d720325c"
-version = "0.3.1"
+version = "0.3.2"
 
 [[CodecZlib]]
 deps = ["BinaryProvider", "Libdl", "TranscodingStreams"]
@@ -75,9 +75,9 @@ version = "0.6.0"
 
 [[ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]
-git-tree-sha1 = "c4c1cca28748906265ed62c788d6fe6f0134d264"
+git-tree-sha1 = "f746d4fc892fdf683b5c22064c8e99b2f5b990e7"
 uuid = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
-version = "0.10.0"
+version = "0.10.2"
 
 [[Colors]]
 deps = ["ColorTypes", "FixedPointNumbers", "InteractiveUtils", "Reexport"]
@@ -111,9 +111,9 @@ version = "1.7.0"
 
 [[DataStructures]]
 deps = ["InteractiveUtils", "OrderedCollections"]
-git-tree-sha1 = "4dead20a1606a60292529023d6eac18a1ef6432e"
+git-tree-sha1 = "9faa13be79557bf4c5713fb912b0e3c5aa33d046"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.17.12"
+version = "0.17.13"
 
 [[Dates]]
 deps = ["Printf"]
@@ -235,9 +235,9 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[NCDatasets]]
 deps = ["BinDeps", "CFTime", "CondaBinDeps", "DataStructures", "Dates", "Libdl", "Printf"]
-git-tree-sha1 = "89d5c2259694a459194983105be10b43f6fbefc8"
+git-tree-sha1 = "271e4670a6b30ec1e5daf6ba8b30240b7d85f535"
 uuid = "85f8d34a-cbdd-5861-8df4-14fed0d494ab"
-version = "0.10.1"
+version = "0.10.2"
 
 [[NNlib]]
 deps = ["BinaryProvider", "Libdl", "LinearAlgebra", "Requires", "Statistics"]
@@ -266,9 +266,9 @@ version = "1.1.0"
 
 [[Parsers]]
 deps = ["Dates", "Test"]
-git-tree-sha1 = "75d07cb840c300084634b4991761886d0d762724"
+git-tree-sha1 = "f8f5d2d4b4b07342e5811d2b6428e45524e241df"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "1.0.1"
+version = "1.0.2"
 
 [[Pkg]]
 deps = ["Dates", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Test", "UUIDs"]
@@ -348,9 +348,9 @@ version = "1.0.1"
 
 [[TimerOutputs]]
 deps = ["Printf"]
-git-tree-sha1 = "311765af81bbb48d7bad01fb016d9c328c6ede03"
+git-tree-sha1 = "123b64952b3fb1d42984cde6f1bd425479be6dcb"
 uuid = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
-version = "0.5.3"
+version = "0.5.4"
 
 [[TranscodingStreams]]
 deps = ["Random", "Test"]

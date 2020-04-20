@@ -54,18 +54,10 @@ sca(axs[3])
 energy_limits = (1e-6, 2e-4)
 levels = vcat([0.0], energy_limits[1]:1e-5:energy_limits[2], [maximum(averages.E)])
 
-#contourf(TC, ZC, averages.E', vmin=energy_limits[1], vmax=energy_limits[2], levels=levels, cmap="YlGnBu_r")
-
 max_cubed = maximum(abs, averages.W³)
 vertical_limits = [-1, 1] * 5e-7
 levels = vcat(-[max_cubed], vertical_limits[1]:1e-8:vertical_limits[2], [max_cubed])
 contourf(TF, ZF, averages.W³', cmap="RdBu_r", levels=levels, vmin=vertical_limits[1], vmax=vertical_limits[2])
-
-#signed_log_w³ = @. -sign(averages.W³) * log10(abs(averages.W³))
-#max_signed_log_w³ = maximum(abs, filter(!isnan, signed_log_w³))
-#vertical_limits = [-1, 1] * 10
-#levels = vcat(-[max_signed_log_w³], vertical_limits[1]:0.1:vertical_limits[2], [max_signed_log_w³])
-#contourf(TF, ZF, signed_log_w³', cmap="RdBu_r", levels=levels, vmin=vertical_limits[1], vmax=vertical_limits[2])
 
 ylim(-48, 0)
 xlim(0, 2)

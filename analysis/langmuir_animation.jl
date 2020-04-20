@@ -8,9 +8,9 @@ fs = 14
 plt.rc("font"; family="serif", serif=["Computer Modern Roman"], size=fs)
 plt.rc("text", usetex=true)
 
-     run_name = "growing_waves_Qb5.0e-10_Nsq1.0e-06_init0.5_a2.0_k6.3e-02_T4.0_Nh32_Nz32"
+     run_name = "growing_waves_Qb5.0e-10_Nsq1.0e-06_init0.5_a2.0_k6.3e-02_T4.0_Nh256_Nz256"
 run_directory = joinpath(@__DIR__, "..", "data", run_name)
-     run_path = joinpath(run_directory, run_name * "_slices.jld2")
+     run_path = joinpath(run_directory, run_name * "_slices_part1.jld2")
 
 file = jldopen(run_path)
 
@@ -83,7 +83,9 @@ function plot_3d!(fig, path, i)
 
     ax1.view_init(elev=view_elev, azim=-135)
 
-    cb = colorbar(w_im_x, ax=ax1, ticks=wlim:0.4:wlim)
+    dtick = round(Int, 2 * wlim / 11 * 100) / 100
+    ticks = -5dtick:dtick:5dtick
+    cb = colorbar(w_im_x, ax=ax1, ticks=ticks)
 
     pos_cb = get_position(cb.ax)
 

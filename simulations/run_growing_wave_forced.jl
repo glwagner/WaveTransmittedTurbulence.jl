@@ -134,6 +134,16 @@ elseif case == "surface_stress_with_waves"
 
     u_bcs = UVelocityBoundaryConditions(grid, top = BoundaryCondition(Flux, Qᵘ))
 
+elseif case == "surface_stress_with_growing_waves"
+
+    stokes_drift = GrowingStokesDrift(wavenumber=wavenumber, wave_amplitude=wave_amplitude,
+                                      growth_time_scale=growth_time_scale)
+
+    Qᵘ = EffectiveStressGrowingStokesDrift(wavenumber=wavenumber, wave_amplitude=wave_amplitude,
+                                           growth_time_scale=growth_time_scale)
+
+    u_bcs = UVelocityBoundaryConditions(grid, top = BoundaryCondition(Flux, Qᵘ))
+
 else
     error("There is no such case '$case'!")
 end

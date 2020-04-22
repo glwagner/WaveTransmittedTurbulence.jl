@@ -1,3 +1,9 @@
+function bottom_left_text!(ax, txt; kwargs...)
+    sca(ax)
+    text(0.015, 0.02, txt; transform=ax.transAxes, horizontalalignment="left", verticalalignment="bottom", kwargs...)
+    return nothing
+end
+
 """
     makeplot!(axs, model)
 

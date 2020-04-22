@@ -178,34 +178,47 @@ function collect_horizontal_averages(filename)
     grid = get_grid(filename)
 
     cell_quantity_names = (:U, :V, :b, :U², :V², :E, :νₑ, :κₑ_b)
-    cell_quantities = NamedTuple{cell_quantity_names}(Tuple(zeros(grid.Nz, length(iters)) 
+    cell_quantities = NamedTuple{cell_quantity_names}(Tuple(zeros(length(iters), grid.Nz)
                                                             for i = 1:length(cell_quantity_names)))
 
     face_quantity_names = (:W², :W³, :wu, :wv, :wb, :τ₁₃, :τ₂₃, :τ₃₃, :q₃_b)
-    face_quantities = NamedTuple{face_quantity_names}(Tuple(zeros(grid.Nz+1, length(iters))
+    face_quantities = NamedTuple{face_quantity_names}(Tuple(zeros(length(iters), grid.Nz+1)
                                                             for i = 1:length(face_quantity_names)))
 
     t = zeros(length(iters))
 
     file = jldopen(filename)
 
+    U = zeros(length(iters), grid.Nz+2)
+    V = zeros(length(iters), grid.Nz+2)
+
     for (j, iter) in enumerate(iters)
         for i = 1:length(cell_quantities)
             c = cell_quantities[i]
             name = propertynames(cell_quantities)[i]
-            c[:, j] .= file["timeseries/$name/$iter"][:][2:end-1]
+            c[j, :] .= file["timeseries/$name/$iter"][:][2:end-1]
         end
 
         for i = 1:length(face_quantities)
             f = face_quantities[i]
             name = propertynames(face_quantities)[i]
-            f[:, j] .= file["timeseries/$name/$iter"][:][2:end]
+            f[j, :] .= file["timeseries/$name/$iter"][:][2:end]
         end
+
+        U[j, :] .= file["timeseries/U/$iter"][:]
+        V[j, :] .= file["timeseries/V/$iter"][:]
 
         t[j] = file["timeseries/t/$iter"]
     end
 
     close(file)
 
-    return merge((t=t,), cell_quantities, face_quantities)
+    # No stress
+    U[:, end] = U[:, end-1]
+    V[:, end] = V[:, end-1]
+
+    Uz = (U[:, 2:end] .- U[:, 1:end-1]) ./ grid.Δz
+    Vz = (V[:, 2:end] .- V[:, 1:end-1]) ./ grid.Δz
+    
+    return merge((t=t,), cell_quantities, face_quantities, (Uz=Uz, Vz=Vz))
 end

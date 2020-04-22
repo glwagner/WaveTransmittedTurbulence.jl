@@ -95,9 +95,10 @@ function plot_fluxes(suffix, save_points)
     return fig, axs
 end
 
+#suffix = "Qb5.0e-10_Nsq1.0e-06_init0.5_a2.0_k6.3e-02_T4.0_Nh256_Nz256"
 suffix = "Qb5.0e-10_Nsq1.0e-06_init0.5_a2.0_k6.3e-02_T4.0_Nh256_Nz256"
 
 fig, axs = plot_fluxes(suffix, (27,))# 110, 210,))
 
 sca(axs[1])
-legend(loc="bottom right")
+legend(loc="lower right")

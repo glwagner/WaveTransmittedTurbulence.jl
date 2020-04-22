@@ -133,18 +133,18 @@ Uˢ = uˢ(wave_amplitude, wavenumber)
 u★ = sqrt(τ)
 
 fs = 14
-plt.rc("font"; family="serif", serif=["Computer Modern Roman"], size=fs)
-plt.rc("text", usetex=true)
+#plt.rc("font"; family="serif", serif=["Computer Modern Roman"], size=fs)
+plt.rc("font"; size=fs)
+#plt.rc("text", usetex=true)
 
 #####
 ##### Make the animation
 #####
 
-case = "surface_stress_no_waves"
+case = "surface_stress_with_waves"
 paths = get_paths(case)
            
 grid = get_grid(paths[1])
-total_iters = 0
 
 close("all")
 fig = figure(figsize=(14, 7))
@@ -154,19 +154,17 @@ dpi = 480
 images_directory = joinpath(@__DIR__, "frames", case)
 mkpath(images_directory)
 
-@show iters = [get_iters(path)[end] for path in paths]
+@show save_points = [length(get_iters(path)) for path in paths]
 
 # Animate
-for (ipath, path) in enumerate(paths[2:2])
+ipath = 7
+path = paths[ipath]
 
-    file_iters = get_iters(path)
-    cumulative_iters = ipath == 0 ? 0 : sum(iters[1:ipath-1])
+file_iters = get_iters(path)
+cumulative_images = ipath == 0 ? 0 : sum(save_points[1:ipath-1])
 
-    for (j_img, iter) in enumerate(file_iters)
-        plot_3d!(fig, grid, path, iter, u★)
-        image_path = joinpath(images_directory, @sprintf("%s_%06d.png", case, j_img + cumulative_iters))
-        savefig(image_path, dpi=dpi)
-    end
-
-    total_iters += length(iters)
+for (j_img, iter) in enumerate(file_iters)
+    plot_3d!(fig, grid, path, iter, u★)
+    image_path = joinpath(images_directory, @sprintf("%s_%06d.png", case, j_img + cumulative_images))
+    savefig(image_path, dpi=dpi)
 end

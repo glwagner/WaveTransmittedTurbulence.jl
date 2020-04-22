@@ -35,21 +35,31 @@ function parse_command_line_arguments()
             default = 32
             arg_type = Int
 
-        "--buoyancy_flux", "-Q"
+        "--buoyancy-flux", "-Q"
             help = """The surface buoyancy flux that drives convection in units of m² s⁻³. 
                       A positive buoyancy flux implies cooling."""
             default = 5e-10
             arg_type = Float64
 
-        "--buoyancy_gradient"
+        "--buoyancy-gradient"
             help = """The buoyancy gradient, or the square of the Brunt-Vaisala frequency N²,
                       at the start of the simulation in units s⁻²."""
             default = 1e-6
             arg_type = Float64
 
-        "--inertial_periods"
+        "--inertial-periods"
             help = "The number of inertial periods for which the simulation should be run."
             default = 0.5
+            arg_type = Float64
+
+        "--domain-size-multiplier"
+            help = "Multiplies domain size by the 'default domain size' 128 x 128 x 64'"
+            default = 1.0
+            arg_type = Float64
+
+        "--coriolis", "-f"
+            help = "Sets the Coriolis parameter"
+            default = 1e-4
             arg_type = Float64
 
         "--device", "-d"
@@ -68,15 +78,14 @@ args = parse_command_line_arguments()
 # # Set numerical and physical parameters
 
 # These parameters are set on the command line.
-Nh = args["Nh"]                # Number of grid points in x, y
-Nz = args["Nz"]                # Number of grid points in z
-Qᵇ = args["buoyancy_flux"]     # [m² s⁻³] Buoyancy flux at surface
-N² = args["buoyancy_gradient"] # [s⁻²] Initial buoyancy gradient
+Nh = args["Nh"]                             # Number of grid points in x, y
+Nz = args["Nz"]                             # Number of grid points in z
+Qᵇ = args["buoyancy-flux"]                  # [m² s⁻³] Buoyancy flux at surface
+N² = args["buoyancy-gradient"]              # [s⁻²] Initial buoyancy gradient
+ f = args["coriolis"                        # [s⁻¹] Coriolis parameter
 
-Lh = 128                       # [m] Grid spacing in x, y (meters)
-Lz = 64                        # [m] Grid spacing in z (meters)
-θ₀ = 20.0                      # [ᵒC] Surface temperature
- f = 1e-4                      # [s⁻¹] Coriolis parameter
+Lh = 128 * args["domain-size-multiplier"]   # [m] Grid spacing in x, y (meters)
+Lz = 64 * args["domain-size-multiplier"]    # [m] Grid spacing in z (meters)
 
 # Create the grid 
 grid = RegularCartesianGrid(size=(Nh, Nh, Nz), x=(0, Lh), y=(0, Lh), z=(-Lz, 0))
@@ -114,8 +123,8 @@ b_forcing = ParameterizedForcing(Fb, (δ=δ, τ=τ, dbdz=N²))
 
 # # Model instantiation, initial condition, and model run
 
-prefix = @sprintf("free_convection_Qb%.1e_Nsq%.1e_stop%.1f_Nh%d_Nz%d", Qᵇ, N², 
-                  stop_time * f / 2π, Nh, Nz)
+prefix = @sprintf("free_convection_Qb%.1e_Nsq%.1e_f%.1e_stop%.1f_dom%.1f_Nh%d_Nz%d", 
+                  Qᵇ, N², f, stop_time * f / 2π, args["domain-size-multiplier"], Nh, Nz)
 
 model = IncompressibleModel(       architecture = has_cuda() ? GPU() : CPU(),
                                            grid = grid,

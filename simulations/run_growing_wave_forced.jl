@@ -8,6 +8,8 @@ environment.
 =#
 using WaveTransmittedTurbulence
 
+using Random, Printf, Glob, ArgParse
+
 using 
     Oceananigans, 
     Oceananigans.Diagnostics, 
@@ -19,7 +21,7 @@ using
     Oceananigans.TurbulenceClosures, 
     Oceananigans.Buoyancy
 
-using Random, Printf, Glob, ArgParse
+using Oceananigans: g_Earth
 
 "Returns a dictionary of command line arguments."
 function parse_command_line_arguments()
@@ -204,10 +206,10 @@ simulation = Simulation(model, Δt=wizard, stop_time=stop_time, progress_frequen
 spinup_iteration = iterations[save_point]
 spinup_time = get_time(filepath, spinup_iteration) * f / 2π # Final spinup time / initial sim time, in inertial periods
 
-prefix = @sprintf("%s_Qb%.1e_Nsq%.1e_init%.1f_a%.1f_k%.1e_T%.1f_Nh%d_Nz%d", case,
+prefix = @sprintf("%s_Qb%.1e_Nsq%.1e_f%.1e_dom%.1f_init%.1f_a%.1f_k%.1e_T%.1f_Nh%d_Nz%d", case,
                   get_parameter(filepath, "boundary_conditions", "Qᵇ"),
                   get_parameter(filepath, "initial_conditions", "N²"),
-                  spinup_time, wave_amplitude, wavenumber, 
+                  f, grid.Lz / 64, spinup_time, wave_amplitude, wavenumber, 
                   growth_time_scale / hour, model.grid.Nx, model.grid.Nz)
 
 data_directory = joinpath(@__DIR__, "..", "data", prefix) # save data in /data/prefix
@@ -233,6 +235,8 @@ function init(file, model; kwargs...)
         file["surface_waves/growth_time_scale"] = 0
     end
 
+    file["surface_waves/effective_stress"] = wave_amplitude^2 * √(g_Earth * wavenumber) / (2 * growth_time_scale)
+
     return nothing
 end
 
@@ -250,16 +254,19 @@ simulation.output_writers[:fields] = JLD2OutputWriter(model, FieldOutputs(fields
 
 # Horizontal averages
 simulation.output_writers[:averages] = JLD2OutputWriter(model, horizontal_averages(model);
-                                                        interval = 10minute,
+                                                        interval = 0.25minute,
                                                           prefix = prefix * "_averages",
                                                              dir = data_directory,
                                                             init = init,
                                                            force = true)
 
 # Two-dimensional slices
-yz_slices = YZSlices((w=model.velocities.w,), suffix = "_yz", x =  0)
-xz_slices = XZSlices((w=model.velocities.w,), suffix = "_xz", y =  0)
-xy_slices = XYSlices((w=model.velocities.w,), suffix = "_xy", z = -2)
+yz_slices = YZSlices((w=model.velocities.w,), suffix = "_yz",   x =  0)
+xz_slices = XZSlices((w=model.velocities.w,), suffix = "_xz",   y =  0)
+
+xy_slices = XYSlices(model.velocities, suffix = "_xy4",  z = -4)
+xy_slices = XYSlices(model.velocities, suffix = "_xy16", z = -16)
+xy_slices = XYSlices(model.velocities, suffix = "_xy32", z = -32)
 
 simulation.output_writers[:slices] = JLD2OutputWriter(model, merge(yz_slices, xz_slices, xy_slices);
                                                           interval = 0.25minute,

@@ -3,7 +3,7 @@ using WaveTransmittedTurbulence, Oceananigans, PyPlot, PyCall, Printf, JLD2
 using Oceananigans.Buoyancy: g_Earth
 
 fs = 16
-lblfs = 14
+lblfs = 13
 plt.rc("font"; family="serif", serif=["Computer Modern Roman"], size=fs)
 plt.rc("text", usetex=true)
 
@@ -16,10 +16,12 @@ end
 function plot_growing_wave_profiles(suffix, part; i=nothing)
      waves_name = "growing_waves_$suffix"
     stress_name = "surface_stress_no_waves_$suffix"
-      both_name = "surface_stress_with_waves_$suffix"
+    steady_name = "surface_stress_with_waves_$suffix"
+      both_name = "surface_stress_with_growing_waves_$suffix"
 
      waves_path,  waves_directory = name_to_path(waves_name, part)
     stress_path, stress_directory = name_to_path(stress_name, part)
+    steady_path, steady_directory = name_to_path(steady_name, part)
       both_path,   both_directory = name_to_path(both_name, part)
 
     grid = get_grid(waves_path)
@@ -35,6 +37,7 @@ function plot_growing_wave_profiles(suffix, part; i=nothing)
 
     t, U_w, V_w, S_w, B_w, Bz_w, w²_w, E_w = calculate_horizontal_average_timeseries(waves_directory)
     t, U_s, V_s, S_s, B_s, Bz_s, w²_s, E_s = calculate_horizontal_average_timeseries(stress_directory)
+    t, U_l, V_l, S_l, B_l, Bz_l, w²_l, E_l = calculate_horizontal_average_timeseries(steady_directory)
     t, U_b, V_b, S_b, B_b, Bz_b, w²_b, E_b = calculate_horizontal_average_timeseries(both_directory)
 
     #####
@@ -50,16 +53,20 @@ function plot_growing_wave_profiles(suffix, part; i=nothing)
     i === nothing && (i = length(B_w))
 
     plot_profiles!(axs, grid, B_w[i], Bz_w[i], S_w[i], w²_w[i] / τ; 
-                   label="Growing swell, \$ t = 2 \\pi / f \$", 
+                   label="Growing swell, no surface stress, \$ t = 2 \\pi / f \$", 
                    linestyle="-", color=defaultcolors[1], alpha=0.8, linewidth=2)
 
     plot_profiles!(axs, grid, B_s[i], Bz_s[i], S_s[i], w²_s[i] / τ; 
-                   label="Surface stress, no waves, \$ t = 2 \\pi / f \$", 
+                   label="Surface stress, no swell, \$ t = 2 \\pi / f \$", 
                    linestyle="-", color=defaultcolors[2], alpha=0.5, linewidth=1.6)
 
-    plot_profiles!(axs, grid, B_b[i], Bz_b[i], S_b[i], w²_b[i] / τ; 
-                   label="Surface stress with steady waves, \$ t = 2 \\pi / f \$", 
+    plot_profiles!(axs, grid, B_l[i], Bz_l[i], S_l[i], w²_l[i] / τ; 
+                   label="Surface stress, steady swell, \$ t = 2 \\pi / f \$", 
                    linestyle="-", color="xkcd:rust", alpha=0.5, linewidth=1.6)
+
+    plot_profiles!(axs, grid, B_b[i], Bz_b[i], S_b[i], w²_b[i] / τ; 
+                   label="Surface stress, growing swell, \$ t = 2 \\pi / f \$", 
+                   linestyle="-", color="xkcd:pinkish", alpha=0.5, linewidth=1.6)
 
     ylim(-52, 0.1)
 
@@ -69,7 +76,7 @@ function plot_growing_wave_profiles(suffix, part; i=nothing)
 
     xlim(-6e-5, 0.0)
     xticks([-5e-5, -1e-5], [L"-5 \times 10^{-5}", L"-10^{-5}"])
-    legend(loc=3, bbox_to_anchor=(0.02, 0.02, 1.0, 1.0), prop=Dict(:size=>lblfs), ncol=2, frameon=true, framealpha=1.0)
+    legend(loc="center", bbox_to_anchor=(0.02, 0.02, 0.98, 0.98), prop=Dict(:size=>lblfs), ncol=2, frameon=true, framealpha=1.0)
 
     sca(axs[2])
 

@@ -15,9 +15,6 @@ export
     XZSlice,
     XZSlices,
 
-    # plotting.jl
-    make_plot,
-
     # forcing.jl
     μ,
     Ψᵢ,
@@ -62,7 +59,9 @@ export
     SteadyStokesDrift,
     EffectiveStressGrowingStokesDrift,
 
-    # plotting.jl
+    # visualization.jl
+    make_plot,
+    bottom_left_text!,
     usecmbright,
     defaultcolors,
     removespines,
@@ -75,7 +74,7 @@ export
     @hascuda,
     has_cuda
 
-using OffsetArrays, JLD2, Printf, Glob, Statistics
+using OffsetArrays, JLD2, Printf, Glob, Statistics, PyPlot, PyCall
 
 using Oceananigans,
       Oceananigans.AbstractOperations,
@@ -118,20 +117,7 @@ include("forcing.jl")
 include("files.jl")
 include("les.jl")
 include("progress_messenger.jl")
-
+include("visualization.jl")
 include("stokes_drift.jl")
-
-# Don't try to load PyPlot when we don't have a working python.
-withplots = try
-    using PyPlot, PyCall
-    include("plotting.jl")
-    true
-catch
-    false
-end
-
-macro haspyplot(expr)
-    return withplots ? :($(esc(expr))) : :(nothing)
-end
 
 end # module

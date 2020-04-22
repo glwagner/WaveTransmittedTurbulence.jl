@@ -21,7 +21,7 @@ using
     Oceananigans.TurbulenceClosures, 
     Oceananigans.Buoyancy
 
-using Oceananigans: g_Earth
+using Oceananigans.Buoyancy: g_Earth
 
 "Returns a dictionary of command line arguments."
 function parse_command_line_arguments()

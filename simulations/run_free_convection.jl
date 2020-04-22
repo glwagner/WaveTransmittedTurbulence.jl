@@ -82,7 +82,7 @@ Nh = args["Nh"]                             # Number of grid points in x, y
 Nz = args["Nz"]                             # Number of grid points in z
 Qᵇ = args["buoyancy-flux"]                  # [m² s⁻³] Buoyancy flux at surface
 N² = args["buoyancy-gradient"]              # [s⁻²] Initial buoyancy gradient
- f = args["coriolis"                        # [s⁻¹] Coriolis parameter
+ f = args["coriolis"]                       # [s⁻¹] Coriolis parameter
 
 Lh = 128 * args["domain-size-multiplier"]   # [m] Grid spacing in x, y (meters)
 Lz = 64 * args["domain-size-multiplier"]    # [m] Grid spacing in z (meters)
@@ -95,7 +95,7 @@ grid = RegularCartesianGrid(size=(Nh, Nh, Nz), x=(0, Lh), y=(0, Lh), z=(-Lz, 0))
 #
 #   h ∼ √(2 * Qᵇ * stop_time / N²)
 
-stop_time = 2π / f * args["inertial_periods"]
+stop_time = 2π / f * args["inertial-periods"]
 
 # # Near-wall LES diffusivity modification + temperature flux specification
 
@@ -137,7 +137,9 @@ model = IncompressibleModel(       architecture = has_cuda() ? GPU() : CPU(),
                            )
 
 # Initial condition
-ε₀, Δb, w★ = 1e-6, N² * Lz, (Qᵇ * Lz)^(1/3)
+ε₀ = 1e-6
+Δb = N² * Lz
+w★ = (Qᵇ * Lz)^(1/3)
 Ξ(ε₀, z) = ε₀ * randn() * z / Lz * exp(z / 2) # rapidly decaying noise
 bᵢ(x, y, z) = N² * z + Ξ(ε₀ * Δb, z)
 uᵢ(x, y, z) = Ξ(ε₀ * w★, z)

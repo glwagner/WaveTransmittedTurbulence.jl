@@ -264,11 +264,11 @@ simulation.output_writers[:averages] = JLD2OutputWriter(model, horizontal_averag
 yz_slices = YZSlices((w=model.velocities.w,), suffix = "_yz",   x =  0)
 xz_slices = XZSlices((w=model.velocities.w,), suffix = "_xz",   y =  0)
 
-xy_slices = XYSlices(model.velocities, suffix = "_xy4",  z = -4)
-xy_slices = XYSlices(model.velocities, suffix = "_xy16", z = -16)
-xy_slices = XYSlices(model.velocities, suffix = "_xy32", z = -32)
+xy04_slices = XYSlices(model.velocities, suffix = "_xy04", z = -4)
+xy16_slices = XYSlices(model.velocities, suffix = "_xy16", z = -16)
+xy32_slices = XYSlices(model.velocities, suffix = "_xy32", z = -32)
 
-simulation.output_writers[:slices] = JLD2OutputWriter(model, merge(yz_slices, xz_slices, xy_slices);
+simulation.output_writers[:slices] = JLD2OutputWriter(model, merge(yz_slices, xz_slices, xy04_slices, xy16_slices, xy32_slices);
                                                           interval = 0.25minute,
                                                       max_filesize = 2GiB,
                                                             prefix = prefix * "_slices",

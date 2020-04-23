@@ -60,6 +60,14 @@ export
     EffectiveStressGrowingStokesDrift,
 
     # visualization.jl
+    stretch_x!,
+    stretch_y!,
+    shift_up!,
+    shift_down!,
+    shift_left!,
+    shift_right!,
+    sequential_limit_levels,
+    divergent_limit_levels,
     make_plot,
     bottom_left_text!,
     usecmbright,

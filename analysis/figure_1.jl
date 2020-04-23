@@ -26,11 +26,13 @@ growth_time_scale = file["surface_waves/growth_time_scale"]
 close(file)
 
 Uˢ = uˢ(wave_amplitude, wavenumber)
- τ = wave_amplitude^2 * √(g_Earth * wavenumber) / (2 * growth_time_scale)
-u★ = sqrt(τ)
+τw = wave_amplitude^2 * √(g_Earth * wavenumber) / (2 * growth_time_scale)
+u★ = sqrt(τw)
 grid = get_grid(run_path)
 
 iters = get_iters(run_path)
+
+τ(t) = τw * t / growth_time_scale * exp(-t^2 / (2 * growth_time_scale^2))
 
 #####
 ##### 3D visualization
@@ -84,16 +86,6 @@ ax2 = plt.subplot2grid((1, 5), (0, 4))
 
 plt.subplots_adjust(left=0.05, bottom=0.05, right=0.95, top=0.95, hspace=-1)
 
-pos2 = get_position(ax2)
-
-xshift = -0.05
-yshift = 0.1
-pos2[1] += xshift
-pos2[2] += yshift
-pos2[4] -= 2yshift
-
-ax2.set_position(pos2)
-
 w_im_x = ax1.contourf(w_yz / u★, YC_x, ZF_x, 
                       zdir="x", levels=wlevels, offset=x_offset, cmap="RdBu_r", vmin=-wlim, vmax=wlim)
 
@@ -105,23 +97,12 @@ w_im_z = ax1.contourf(XC_z, YC_z, w_xy / u★,
 
 ax1.view_init(elev=view_elev, azim=-135)
 
-cb = colorbar(w_im_x, ax=ax1, ticks=-1.2:0.4:1.2) #wlim:0.4:wlim)
-
-pos_cb = get_position(cb.ax)
+cb = colorbar(w_im_x, ax=ax1, aspect=12, pad=0.05, ticks=-1.2:0.4:1.2) #wlim:0.4:wlim)
 
 α₁ = 0.6
 α₂ = 0.8
 lw₁ = 2
 lw₂ = 1.5
-
-xshift = 0.04
-yshrink = 0.12
-
-pos_cb[1] -= xshift
-pos_cb[2] += yshrink
-pos_cb[4] -= 2yshrink
-
-cb.ax.set_position(pos_cb)
 
 ax1.set_xlabel("\$ x \$ (m)", labelpad=12.0)
 ax1.set_ylabel("\$ y \$ (m)", labelpad=12.0)
@@ -132,29 +113,86 @@ cb.ax.set_title(L"w \, / \max(u_\star)", pad=10.0)
 t, U, V, B, W² = calculate_horizontal_average_timeseries(run_directory)
 
 i₁ = 2
-i₂ = 5
+i₂ = 3
 
 @show f * t[i₁] / 2π
 @show f * t[i₂] / 2π
 
 bottom = 64
-
 k_deep = searchsortedfirst(grid.zF, -bottom)
 k_surface = grid.Nz
 
 @show size(U[1]) size(grid.zC)
 
-ax2.plot(U[i₁][k_deep+1:k_surface+1] / u★, grid.zC[k_deep:end], linestyle="-",  alpha=α₁, linewidth=lw₁, color=defaultcolors[1], label=L"\overline{u^\mathrm{L}} \, |_{t=\pi/4f}")
-ax2.plot(V[i₁][k_deep+1:k_surface+1] / u★, grid.zC[k_deep:end], linestyle="--", alpha=α₂, linewidth=lw₂, color=defaultcolors[1], label=L"\overline{v^\mathrm{L}} \, |_{t=\pi/4f}")
+ax2.plot(U[1][k_deep+1:k_surface+1] / u★, grid.zC[k_deep:end], linestyle="-",  alpha=α₁, linewidth=1, color="k",
+         label=L"\langle u^\mathrm{L} \rangle \, |_{t=0}")
 
-ax2.plot(U[i₂][k_deep+1:k_surface+1] / u★, grid.zC[k_deep:end], linestyle="-",  alpha=α₁, linewidth=lw₁, color=defaultcolors[2], label=L"\overline{u^\mathrm{L}} \, |_{t=2 \pi/f}")
-ax2.plot(V[i₂][k_deep+1:k_surface+1] / u★, grid.zC[k_deep:end], linestyle="--", alpha=α₂, linewidth=lw₂, color=defaultcolors[2], label=L"\overline{v^\mathrm{L}} \, |_{t=2 \pi/f}")
+ax2.plot(V[1][k_deep+1:k_surface+1] / u★, grid.zC[k_deep:end], linestyle="--",  alpha=α₁, linewidth=1, color="k",
+         label=L"\langle v^\mathrm{L} \rangle \, |_{t=0}")
 
-legend(prop=Dict(:size=>fs), bbox_to_anchor=(0.4, 0, 0.1, 1), loc=3, markerfirst=false, frameon=false)
+ax2.plot(U[i₁][k_deep+1:k_surface+1] / u★, grid.zC[k_deep:end], linestyle="-",  alpha=α₁, linewidth=lw₁, color=defaultcolors[1], 
+         label=L"\langle u^\mathrm{L} \rangle \, |_{t=\pi/4f}")
 
-ax2.set_xlabel(L"(\overline{u^\mathrm{L}}, \overline{u^\mathrm{L}}) \, / \, \max(u_\star)")
+ax2.plot(V[i₁][k_deep+1:k_surface+1] / u★, grid.zC[k_deep:end], linestyle="--", alpha=α₂, linewidth=lw₂, color=defaultcolors[1], 
+         label=L"\langle v^\mathrm{L} \rangle \, |_{t=\pi/4f}")
+
+ax2.plot(U[i₂][k_deep+1:k_surface+1] / u★, grid.zC[k_deep:end], linestyle="-",  alpha=α₁, linewidth=lw₁, color=defaultcolors[2], 
+         label=L"\langle u^\mathrm{L} \rangle \, |_{t=\pi/f}")
+
+ax2.plot(V[i₂][k_deep+1:k_surface+1] / u★, grid.zC[k_deep:end], linestyle="--", alpha=α₂, linewidth=lw₂, color=defaultcolors[2], 
+         label=L"\langle v^\mathrm{L} \rangle \, |_{t=\pi/f}")
+
+legend(prop=Dict(:size=>fs), bbox_to_anchor=(0.52, 0, 0.1, 1), loc=3, markerfirst=false, frameon=false)
+
+ax2.set_xlabel(L"\big \{ \, \langle u^\mathrm{L} \rangle, \langle v^\mathrm{L} \rangle \, \big \} \, / \, \max(u_\star)", labelpad=12.0)
 ax2.set_ylabel(L"z \, (\mathrm{m})", labelpad=12.0)
 
 removespines(ax2, "right", "top")
+
+ax3 = ax1.inset_axes([-0.05, 0.0, 0.2, 0.1])
+
+hour = 3600
+ft = range(0.0, stop=2π/f, length=1000)
+
+ax3.plot(ft / hour, τ.(ft))
+ax3.plot([1.0, 1.0] * π/f / hour, [0.0, 5e-5], "k", alpha=0.6, linewidth=1)
+
+fs = 12
+ax3.spines["right"].set_visible(false)
+ax3.spines["top"].set_visible(false)
+
+ax3.text(π/f / hour, 7.5e-5, L"\pi/f", fontsize=fs, ha="center", va="bottom")
+
+d = 0.17
+ax3.text(1.2, d, L"t", fontsize=fs, ha="center", va="center", transform=ax3.transAxes)
+ax3.text(1.2, -d, "(hours)", fontsize=fs-2, ha="center", va="center", transform=ax3.transAxes)
+
+#ax3.text(0.0, 1.3, L"\partial_t U^\mathrm{S} \, (\mathrm{m^2 \, s^{-2}})", fontsize=fs, ha="center", va="bottom", transform=ax3.transAxes)
+
+x = -0.05
+y = 1.55
+δ = 0.03
+ax3.text(x, y, L"\partial_t U^\mathrm{S}", fontsize=fs, ha="right", va="center", transform=ax3.transAxes)
+ax3.text(x+δ, y, L"(\mathrm{m^2 \, s^{-2}})", fontsize=fs-2, ha="left", va="center", transform=ax3.transAxes)
+
+#ax3.text(-0.5, 0.45, L"\int \partial_t u^S \, \mathrm{d} z" * "    ", fontsize=fs, ha="center", va="bottom", transform=ax3.transAxes)
+#ax3.text(-0.5, 0.35, "    " * L"\mathrm{(m^2 \, s^{-2})}", fontsize=fs-2, ha="center", va="top", transform=ax3.transAxes)
+
+ax3.set_xticks([0, 12])
+ax3.set_xticklabels(["0", "12"], fontsize=fs)
+ax3.set_yticks([0, 1e-4])
+ax3.set_yticklabels(["0", L"10^{-4}"], fontsize=fs)
+
+shift_right!(ax1, 0.02)
+shift_down!(ax1, 0.0)
+
+shift_left!(cb.ax, 0.01)
+shift_up!(cb.ax, 0.12)
+stretch_y!(cb.ax, -0.2)
+
+shift_up!(ax2, 0.13)
+stretch_y!(ax2, -0.2)
+
+shift_up!(ax3, 0.05)
 
 savefig(joinpath(@__DIR__, "..", "figures", "figure_1.png"), dpi=480)

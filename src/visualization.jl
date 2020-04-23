@@ -4,6 +4,28 @@ function bottom_left_text!(ax, txt; kwargs...)
     return nothing
 end
 
+function sequential_limit_levels(field; saturate=0.6, nlevs=15, limit=nothing)
+    max_field = maximum(field)
+    limit = limit === nothing ? saturate * max_field : limit
+
+    levels = max_field > limit ?
+                levels = vcat(range(0.0, stop=limit, length=nlevs), [max_field]) :
+                levels = vcat(range(0.0, stop=limit, length=nlevs))
+
+    return limit, levels
+end
+
+function divergent_limit_levels(field; saturate=0.6, nlevs=14, limit=nothing)
+    max_field = maximum(abs, field)
+    limit = limit === nothing ? saturate * max_field : limit
+
+    levels = max_field > limit ?
+                levels = vcat([-max_field], range(-limit, stop=limit, length=nlevs), [max_field]) :
+                levels = range(-limit, stop=limit, length=nlevs)
+
+    return limit, levels
+end
+
 """
     makeplot!(axs, model)
 
@@ -102,5 +124,47 @@ function plot_profiles!(axs, grid, B, Bz, S, w²; label="", kwargs...)
         plot(w²[2:end-1], grid.zF; kwargs...)
     end
 
+    return nothing
+end
+
+function shift_up!(ax, shift)
+    pos = get_position(ax)
+    pos[2] += shift
+    ax.set_position(pos)
+    return nothing
+end
+
+function shift_down!(ax, shift)
+    pos = get_position(ax)
+    pos[2] -= shift
+    ax.set_position(pos)
+    return nothing
+end
+
+function shift_right!(ax, shift)
+    pos = get_position(ax)
+    pos[1] += shift
+    ax.set_position(pos)
+    return nothing
+end
+
+function shift_left!(ax, shift)
+    pos = get_position(ax)
+    pos[1] -= shift
+    ax.set_position(pos)
+    return nothing
+end
+
+function stretch_x!(ax, stretch)
+    pos = get_position(ax)
+    pos[3] += stretch
+    ax.set_position(pos)
+    return nothing
+end
+
+function stretch_y!(ax, stretch)
+    pos = get_position(ax)
+    pos[4] += stretch
+    ax.set_position(pos)
     return nothing
 end

@@ -50,7 +50,8 @@ function parse_command_line_arguments()
             help = """The case to run. The options are:
                    1. "growing_waves"
                    2. "surface_stress_no_waves"
-                   3. "surface_stress_with_waves"
+                   3. "surface_stress_with_steady_waves"
+                   4. "surface_stress_with_growing_waves"
                    """
             default = "growing_waves"
             arg_type = String
@@ -127,7 +128,7 @@ elseif case == "surface_stress_no_waves"
 
     u_bcs = UVelocityBoundaryConditions(grid, top = BoundaryCondition(Flux, Qᵘ))
 
-elseif case == "surface_stress_with_waves"
+elseif case == "surface_stress_with_steady_waves"
 
     stokes_drift = SteadyStokesDrift(wavenumber=wavenumber, wave_amplitude=wave_amplitude)
 

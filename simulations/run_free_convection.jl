@@ -159,7 +159,7 @@ end
 # # Prepare the simulation
 
 # Adaptive time-stepping
-wizard = TimeStepWizard(       cfl = 0.01,
+wizard = TimeStepWizard(       cfl = 0.2,
                                 Δt = 1e-1,
                         max_change = 1.1,
                             max_Δt = 10.0)

@@ -76,6 +76,11 @@ function parse_command_line_arguments()
             default = 100.0
             arg_type = Float64
 
+        "--save-slices"
+            help = "Flag for saving slices for movie making."
+            default = false
+            arg_type = Bool
+
         "--device", "-d"
             help = "The CUDA device index on which to run the simulation."
             default = 0
@@ -193,7 +198,7 @@ set_from_file!(model, filepath, i=save_point)
 stop_time = 2π / f * args["inertial-periods"]
 
 # Adaptive time-stepping
-wizard = TimeStepWizard(       cfl = 0.1,
+wizard = TimeStepWizard(       cfl = 0.2,
                                 Δt = 1e-1,
                         max_change = 1.1,
                             max_Δt = 10.0)
@@ -255,27 +260,29 @@ simulation.output_writers[:fields] = JLD2OutputWriter(model, FieldOutputs(fields
 
 # Horizontal averages
 simulation.output_writers[:averages] = JLD2OutputWriter(model, horizontal_averages(model);
-                                                        interval = 0.25minute,
+                                                        interval = 0.5minute,
                                                           prefix = prefix * "_averages",
                                                              dir = data_directory,
                                                             init = init,
                                                            force = true)
 
-# Two-dimensional slices
-yz_slices = YZSlices((w=model.velocities.w,), suffix = "_yz",   x =  0)
-xz_slices = XZSlices((w=model.velocities.w,), suffix = "_xz",   y =  0)
+if args["save-slices"]
+    # Two-dimensional slices
+    yz_slices = YZSlices((w=model.velocities.w,), suffix = "_yz",   x =  0)
+    xz_slices = XZSlices((w=model.velocities.w,), suffix = "_xz",   y =  0)
 
-xy04_slices = XYSlices(model.velocities, suffix = "_xy04", z = -4)
-xy16_slices = XYSlices(model.velocities, suffix = "_xy16", z = -16)
-xy32_slices = XYSlices(model.velocities, suffix = "_xy32", z = -32)
+    xy04_slices = XYSlices(model.velocities, suffix = "_xy04", z = -4)
+    xy16_slices = XYSlices(model.velocities, suffix = "_xy16", z = -16)
+    xy32_slices = XYSlices(model.velocities, suffix = "_xy32", z = -32)
 
-simulation.output_writers[:slices] = JLD2OutputWriter(model, merge(yz_slices, xz_slices, xy04_slices, xy16_slices, xy32_slices);
-                                                          interval = 0.25minute,
-                                                      max_filesize = 2GiB,
-                                                            prefix = prefix * "_slices",
-                                                               dir = data_directory,
-                                                              init = init,
-                                                             force = true)
+    simulation.output_writers[:slices] = JLD2OutputWriter(model, merge(yz_slices, xz_slices, xy04_slices, xy16_slices, xy32_slices);
+                                                              interval = 0.25minute,
+                                                          max_filesize = 2GiB,
+                                                                prefix = prefix * "_slices",
+                                                                   dir = data_directory,
+                                                                  init = init,
+                                                                 force = true)
+end
 
 # # Run
 print_banner(simulation)

@@ -8,50 +8,26 @@ fs = 12
 plt.rc("font"; family="serif", serif=["Computer Modern Roman"], size=fs)
 plt.rc("text", usetex=true)
 
-run_name = "surface_stress_with_waves_Qb5.0e-10_Nsq1.0e-06_init0.5_a2.0_k6.3e-02_T4.0_Nh128_Nz128"
+function plot_w_u!(ax, path, iter)
+    grid = get_grid(path)
 
-run_directory = joinpath(@__DIR__, "..", "data", run_name)
-     run_path = joinpath(run_directory, run_name * "_fields.jld2")
+    file = jldopen(path)
 
-file = jldopen(run_path)
+    f = file["coriolis/f"]
+    u = file["timeseries/u/$iter"]
+    v = file["timeseries/v/$iter"]
+    w = file["timeseries/w/$iter"]
+    t = file["timeseries/t/$iter"]
 
-   wave_amplitude = file["surface_waves/wave_amplitude"]
-       wavenumber = file["surface_waves/wavenumber"]
-growth_time_scale = file["surface_waves/growth_time_scale"]
-                f = file["coriolis/f"]
-
-close(file)
-
-iters = get_iters(run_path)      
-
-ncols = 6
-nrows = ceil(Int, length(iters)/ncols)
-
-close("all")
-fig, axs = subplots(ncols=ncols, nrows=nrows)
-
-for (iplot, iter) in enumerate(iters)
-
-    Uˢ = uˢ(wave_amplitude, wavenumber)
-     τ = wave_amplitude^2 * √(g_Earth * wavenumber) / (2 * growth_time_scale)
-    u★ = sqrt(τ)
-    grid = get_grid(run_path)
-
-    t, u, v, w, b = get_fields(run_path, iter)
+    close(file)
 
     @show f * t / 2π
+    @show wmax = maximum(abs, w)
 
-    umax = maximum(abs, u/u★)
-    @show wmax = maximum(abs, w/u★)
-
-    wlim = 0.1 #0.5 * wmax #1 #0.3 #19 * wmax / 20#1.5
+    wlim = 0.5 * wmax
     wlevels = vcat([-wmax], -wlim:2wlim/11:wlim, [wmax])
 
-    ulim = umax/2
-    ulevels = vcat([-umax], -ulim:2ulim/11:ulim, [umax])
-
-    depth = 2.0
-
+    depth = 4.0
     k = searchsortedfirst(grid.zF, -depth)
 
     x, y = meshgrid(grid.xC, grid.yC)
@@ -60,11 +36,8 @@ for (iplot, iter) in enumerate(iters)
     u_xy = 0.5 * (u[2:end-1, 2:end-1, k+2] .+ u[3:end, 2:end-1, k+2])
     v_xy = 0.5 * (v[2:end-1, 2:end-1, k+2] .+ v[2:end-1, 3:end, k+2])
 
-    @show row = ceil(Int, iplot/ncols)
-    @show col = mod1(iplot, ncols)
-    sca(axs[row, col])
-
-    w_im = contourf(x, y, w_xy / u★, levels=wlevels, cmap="RdBu_r", vmin=-wlim, vmax=wlim)
+    sca(ax)
+    w_im = contourf(x, y, w_xy, levels=wlevels, cmap="RdBu_r", vmin=-wlim, vmax=wlim)
                           
     skip = 20
     q_z = quiver(   x[1:skip:end, 1:skip:end],    y[1:skip:end, 1:skip:end], 
@@ -74,8 +47,29 @@ for (iplot, iter) in enumerate(iters)
     title(@sprintf("\$ t = %.2f \$", f * t / 2π))
 end
 
+name = "surface_stress_with_waves_Qb5.0e-10_Nsq1.0e-06_init0.5_a2.0_k6.3e-02_T4.0_Nh256_Nz256"
+directory = joinpath(@__DIR__, "..", "data", name)
+
+paths = [
+         joinpath(directory, name * "_fields_part1.jld2"),
+         joinpath(directory, name * "_fields_part2.jld2"),
+         joinpath(directory, name * "_fields_part3.jld2"),
+        ]
+
+ncols = 3
+nrows = length(paths)
+
+close("all")
+fig, axs = subplots(ncols=ncols, nrows=nrows, sharex=true, sharey=true)
+
+for (path, i) = zip(paths, 1:nrows)
+    iters = get_iters(path)
+    for (iter, j) = zip(iters, 1:ncols)
+        ax = axs[i, j]
+        plot_w_u!(ax, path, iter)
+    end
+end
+
 for ax in axs
     ax.set_aspect(1)
 end
-
-cb = colorbar(w_im, ax=axs, ticks=-wlim:0.5:wlim)

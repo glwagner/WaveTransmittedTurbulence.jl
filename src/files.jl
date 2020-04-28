@@ -191,6 +191,7 @@ function collect_horizontal_averages(filename)
 
     U = zeros(length(iters), grid.Nz+2)
     V = zeros(length(iters), grid.Nz+2)
+    b = zeros(length(iters), grid.Nz+2)
 
     for (j, iter) in enumerate(iters)
         for i = 1:length(cell_quantities)
@@ -207,6 +208,7 @@ function collect_horizontal_averages(filename)
 
         U[j, :] .= file["timeseries/U/$iter"][:]
         V[j, :] .= file["timeseries/V/$iter"][:]
+        b[j, :] .= file["timeseries/b/$iter"][:]
 
         t[j] = file["timeseries/t/$iter"]
     end
@@ -216,9 +218,14 @@ function collect_horizontal_averages(filename)
     # No stress
     U[:, end] = U[:, end-1]
     V[:, end] = V[:, end-1]
+    b[:, end] = b[:, end-1]
+
+    S = @. sqrt.(U^2 + V^2)
+    S = S[:, 2:end-1]
 
     Uz = (U[:, 2:end] .- U[:, 1:end-1]) ./ grid.Δz
     Vz = (V[:, 2:end] .- V[:, 1:end-1]) ./ grid.Δz
+    bz = (b[:, 2:end] .- b[:, 1:end-1]) ./ grid.Δz
     
-    return merge((t=t,), cell_quantities, face_quantities, (Uz=Uz, Vz=Vz))
+    return merge((t=t,), cell_quantities, face_quantities, (Uz=Uz, Vz=Vz, bz=bz, S=S))
 end

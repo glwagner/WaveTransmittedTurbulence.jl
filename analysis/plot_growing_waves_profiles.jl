@@ -12,41 +12,44 @@ function name_to_path(name)
     return joinpath(directory, name * "_averages.jld2"), directory
 end
 
-function plot_growing_wave_profiles(suffix; i=4200, ylims=nothing) #(-64, 0.1))
+function plot_growing_wave_profiles(suffix; i=4200, ylims=nothing, with_stress_growing_waves=false)
+
     no_stress_growing_waves_name = "growing_waves_$suffix"
-    stress_no_waves_name = "surface_stress_no_waves_$suffix"
-    #stress_steady_waves_name = "surface_stress_with_steady_waves_$suffix"
-    stress_steady_waves_name = "surface_stress_with_waves_$suffix"
-    stress_growing_waves_name = "surface_stress_with_growing_waves_$suffix"
+            stress_no_waves_name = "surface_stress_no_waves_$suffix"
+        stress_steady_waves_name = "surface_stress_with_steady_waves_$suffix"
+       stress_growing_waves_name = "surface_stress_with_growing_waves_$suffix"
 
-    no_stress_growing_waves_path,  no_stress_growing_waves_directory = 
-        name_to_path(no_stress_growing_waves_name)
+    # Convert names to absolute paths and directories
+    no_stress_growing_waves_path, no_stress_growing_waves_directory = name_to_path(no_stress_growing_waves_name)
+            stress_no_waves_path,         stress_no_waves_directory = name_to_path(stress_no_waves_name)
+        stress_steady_waves_path,     stress_steady_waves_directory = name_to_path(stress_steady_waves_name)
+        
+    # Extract data from file
+    no_stress_growing_waves = collect_horizontal_averages(no_stress_growing_waves_path)
+            stress_no_waves = collect_horizontal_averages(stress_no_waves_path)
+        stress_steady_waves = collect_horizontal_averages(stress_steady_waves_path)
 
-    stress_no_waves_path,  stress_no_waves_directory = 
-        name_to_path(stress_no_waves_name)
+    # Use this for the case a=1 m. In the case a=2 m, the boundary layer grows too deep for the 
+    # domain size if both stress and growing waves are prescribed.
+    if with_stress_growing_waves
+        stress_growing_waves_path, stress_growing_waves_directory = name_to_path(stress_growing_waves_name)
+        stress_growing_waves = collect_horizontal_averages(stress_growing_waves_path)
+    end
 
-    stress_steady_waves_path,  stress_steady_waves_directory = 
-        name_to_path(stress_steady_waves_name)
-
-    stress_growing_waves_path,  stress_growing_waves_directory = 
-        name_to_path(stress_growing_waves_name)
-
+    # Make the grid
     grid = get_grid(no_stress_growing_waves_path)
 
+    # Extract wave parameters
     wave_amplitude, wavenumber, growth_time_scale = 
         get_multiple_parameters(no_stress_growing_waves_path, 
                                 "surface_waves", "wave_amplitude", "wavenumber", "growth_time_scale")
 
     f = get_parameter(no_stress_growing_waves_path, "coriolis", "f")
 
+    # Calculate the total stress due to growing waves
     Uˢ = uˢ(wave_amplitude, wavenumber)
-     τ = wave_amplitude^2 * √(g_Earth * wavenumber) / (2 * growth_time_scale)
-    u★ = sqrt(τ)
-
-    no_stress_growing_waves = collect_horizontal_averages(no_stress_growing_waves_path)
-    stress_no_waves = collect_horizontal_averages(stress_no_waves_path)
-    stress_steady_waves = collect_horizontal_averages(stress_steady_waves_path)
-    stress_growing_waves = collect_horizontal_averages(stress_growing_waves_path)
+    τw = wave_amplitude^2 * √(g_Earth * wavenumber) / (2 * growth_time_scale)
+    max_u★² = τw / exp(1)
 
     @show dt = (no_stress_growing_waves.t[2]-no_stress_growing_waves.t[1]) * f/2π
     @show 1/dt
@@ -65,14 +68,14 @@ function plot_growing_wave_profiles(suffix; i=4200, ylims=nothing) #(-64, 0.1))
                    no_stress_growing_waves.b[1, :], 
                    no_stress_growing_waves.bz[1, :], 
                    nothing, 
-                   no_stress_growing_waves.W²[1, :] / τ, 
+                   no_stress_growing_waves.W²[1, :] / max_u★²,
                    label="Initial condition", color="k", linewidth=1.5, alpha=0.4, linestyle="--")
 
     plot_profiles!(axs, grid, 
                    no_stress_growing_waves.b[i, :],
                    no_stress_growing_waves.bz[i, :], 
                    no_stress_growing_waves.S[i, :], 
-                   no_stress_growing_waves.W²[i, :] / τ, 
+                   no_stress_growing_waves.W²[i, :] / max_u★²,
                    label="Growing swell, no surface stress, \$ t = 2 \\pi / f \$", 
                    linestyle="-", color=defaultcolors[1], alpha=1.0, linewidth=2)
 
@@ -80,7 +83,7 @@ function plot_growing_wave_profiles(suffix; i=4200, ylims=nothing) #(-64, 0.1))
                    stress_no_waves.b[i, :],
                    stress_no_waves.bz[i, :], 
                    stress_no_waves.S[i, :], 
-                   stress_no_waves.W²[i, :] / τ, 
+                   stress_no_waves.W²[i, :] / max_u★²,
                    label="Surface stress, no swell, \$ t = 2 \\pi / f \$", 
                    linestyle="-", color=defaultcolors[2], alpha=0.8, linewidth=1.5)
 
@@ -88,17 +91,22 @@ function plot_growing_wave_profiles(suffix; i=4200, ylims=nothing) #(-64, 0.1))
                    stress_steady_waves.b[i, :],
                    stress_steady_waves.bz[i, :], 
                    stress_steady_waves.S[i, :], 
-                   stress_steady_waves.W²[i, :] / τ, 
+                   stress_steady_waves.W²[i, :] / max_u★²,
                    label="Surface stress, steady swell, \$ t = 2 \\pi / f \$", 
                    linestyle="-", color="xkcd:red", alpha=0.8, linewidth=1.5)
 
-    plot_profiles!(axs, grid, 
-                   stress_growing_waves.b[i, :],
-                   stress_growing_waves.bz[i, :], 
-                   stress_growing_waves.S[i, :], 
-                   stress_growing_waves.W²[i, :] / τ, 
-                   label="Surface stress, growing swell, \$ t = 2 \\pi / f \$", 
-                   linestyle="-", color="xkcd:aqua green", alpha=0.8, linewidth=1.5)
+    if with_stress_growing_waves
+        # Note that the maximum effective friction velocity is actually twice 
+        # that of the other cases. However, we use the same scale here to allow
+        # the vertical velocity variances to be directly compared.
+        plot_profiles!(axs, grid, 
+                       stress_growing_waves.b[i, :],
+                       stress_growing_waves.bz[i, :], 
+                       stress_growing_waves.S[i, :], 
+                       stress_growing_waves.W²[i, :] / max_u★²,
+                       label="Surface stress, growing swell, \$ t = 2 \\pi / f \$", 
+                       linestyle="-", color="xkcd:aqua green", alpha=0.8, linewidth=1.5)
+    end
 
     if ylims != nothing
         ylim(ylims...)
@@ -124,7 +132,7 @@ function plot_growing_wave_profiles(suffix; i=4200, ylims=nothing) #(-64, 0.1))
            fontsize=lblfs, labelpad=4.0)
 
     sca(axs[4])
-    xlabel(L"\left \langle w^\mathrm{L} \right \rangle^2 \, / \, \max(u_\star^2)", fontsize=lblfs, labelpad=8.0)
+    xlabel(L"\left \langle \left ( w^\mathrm{L} \right )^2 \right \rangle \, / \, \max \left (u_\star^2 \right )", fontsize=lblfs, labelpad=4.0)
     ylabel("\$ z \$ (m)", fontsize=lblfs, labelpad=10.0)
 
     removespines(axs[1], "top", "right")

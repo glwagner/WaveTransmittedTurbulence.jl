@@ -1,6 +1,6 @@
 using WaveTransmittedTurbulence, Oceananigans, PyPlot, PyCall, Printf, JLD2, Printf
 
-fs = 16
+fs = 14
 plt.rc("font"; family="serif", serif=["Computer Modern Roman"], size=fs)
 plt.rc("text", usetex=true)
 
@@ -62,8 +62,7 @@ close("all")
 
 fig, axs = subplots(ncols=3, figsize=(12, 4))
 
-hpad = 0.06
-fs = 12
+hpad = 0.04
 box_props = Dict(:alpha=>0.9, :facecolor=>"w", :edgecolor=>"w")
 
 hplot = 4
@@ -72,20 +71,20 @@ k = searchsortedfirst(grid.zF, -hplot)
 sca(axs[1])
 im_c = contourf(xCˣʸ, yCˣʸ, w_c[2:end-1, 2:end-1, k] ./ sqrt(τ), cmap="RdBu_r", levels=wlevels, vmin=-wlim, vmax=wlim)
 
-text(hpad*grid.Lx, hpad*grid.Lx, "Reference", fontsize=fs, bbox=box_props)
+text(hpad*grid.Lx, hpad*grid.Lx, "Reference", ha="left", va="bottom", fontsize=fs, bbox=box_props)
 xlabel("\$ x \$ (m)")
 ylabel("\$ y \$ (m)")
 
 sca(axs[2])
 im_e = contourf(xCˣʸ, yCˣʸ, w_e[2:end-1, 2:end-1, k] ./ sqrt(τ), cmap="RdBu_r", levels=wlevels, vmin=-wlim, vmax=wlim)
 
-text(hpad*grid.Lx, hpad*grid.Lx, "Excited", fontsize=fs, bbox=box_props)
+text(hpad*grid.Lx, hpad*grid.Lx, "Excited", ha="left", va="bottom", fontsize=fs, bbox=box_props)
 xlabel("\$ x \$ (m)")
 
 sca(axs[3])
 im_r = contourf(xCˣʸ, yCˣʸ, w_r[2:end-1, 2:end-1, k] ./ sqrt(τ), cmap="RdBu_r", levels=wlevels, vmin=-wlim, vmax=wlim)
 
-text(hpad*grid.Lx, hpad*grid.Lx, "Resting", fontsize=fs, bbox=box_props)
+text(hpad*grid.Lx, hpad*grid.Lx, "Resting", ha="left", va="bottom", fontsize=fs, bbox=box_props)
 xlabel("\$ x \$ (m)")
 
 axs[2].tick_params(left=false, labelleft=false)
@@ -104,7 +103,7 @@ cax_e = divider.append_axes("right", size="5%", pad=0.15)
 divider = make_axes_locatable(axs[3])
 cax = divider.append_axes("right", size="5%", pad=0.15)
 cbar = colorbar(im_r, cax=cax, ticks=-wlim:2wlim/5:wlim)
-cbar.ax.set_title(L"w / u_\star")
+cbar.ax.set_title(L"w / u_\star", pad=12.0)
 
 axs[1].yaxis.set_ticks(32:32:96)
 axs[1].xaxis.set_ticks(32:32:96)

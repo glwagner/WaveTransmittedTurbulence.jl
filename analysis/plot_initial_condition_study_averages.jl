@@ -1,13 +1,23 @@
 using WaveTransmittedTurbulence, Oceananigans, PyPlot, PyCall, Printf, JLD2, Printf
 
+ticker = pyimport("matplotlib.ticker")
+ScalarFormatter = ticker.ScalarFormatter
+
+fs = 14
+plt.rc("font"; family="serif", serif=["Computer Modern Roman"], size=fs)
+plt.rc("text", usetex=true)
+
+minute = 60.0
+hour = 60minute
+
 function plot_initial_condition_study_profiles(wave_amplitude, suffix)
     control_name = "initial_condition_study_resting_0.0x_" * suffix
     resting_name = "initial_condition_study_resting_" * wave_amplitude * "_" * suffix
-    resting_name = "initial_condition_study_excited_" * wave_amplitude * "_" * suffix
+    excited_name = "initial_condition_study_excited_" * wave_amplitude * "_" * suffix
 
-    control_path = joinpath(@__DIR__, "..", "data", control_name, control_name * "_fields_part4.jld2")
-    resting_path = joinpath(@__DIR__, "..", "data", resting_name, resting_name * "_fields_part4.jld2")
-    excited_path = joinpath(@__DIR__, "..", "data", excited_name, excited_name * "_fields_part4.jld2")
+    control_path = joinpath(@__DIR__, "..", "data", control_name, control_name * "_averages.jld2")
+    resting_path = joinpath(@__DIR__, "..", "data", resting_name, resting_name * "_averages.jld2")
+    excited_path = joinpath(@__DIR__, "..", "data", excited_name, excited_name * "_averages.jld2")
 
     grid = get_grid(resting_path)
 
@@ -36,31 +46,32 @@ function plot_initial_condition_study_profiles(wave_amplitude, suffix)
     @show length(resting_averages.t)
     @show length(excited_averages.t)
 
-    iters = [51, 401]
+    iters = [27, 210]
 
     c_labels, r_labels, e_labels = Tuple([] for i = 1:3)
 
     f = get_parameter(resting_path, "coriolis", "f")
 
     for (j, i) in enumerate(iters)
-        @show control.t[i] / hour control.t[i] * 1e-4 / 2π
+        @show control_averages.t[i] / hour control_averages.t[i] * 1e-4 / 2π
 
-        if j == 1
-            if isapprox(f * control.t[i] / 2π, 0.25, atol=1e-2)
-                push!(c_labels, @sprintf("No waves, \$ t = \\frac{1}{4} \\times 2\\pi/f\$"))
-            else
-                push!(c_labels, @sprintf("No waves, \$ t = %.2f \\times 2\\pi/f\$", f * control.t[i] / 2π))
-            end
+        quarter_time_label = "\$ t = \\frac{1}{4} \\times 2\\pi/f\$"
+        full_time_label = "\$ t = 2\\pi/f\$"
+        late_time_label = @sprintf("\$ t = %.2f \\times 2\\pi/f\$", f * control_averages.t[i] / 2π)
+
+        if isapprox(f * control_averages.t[i] / 2π, 0.25, atol=1e-2)
+            push!(c_labels, "No waves, " * quarter_time_label)
+            push!(r_labels, "Resting, " * quarter_time_label)
+            push!(e_labels, "Excited, " * quarter_time_label)
+        elseif isapprox(f * control_averages.t[i] / 2π, 2, atol=1e-2)
+            push!(c_labels, "No waves, " * full_time_label)
+            push!(r_labels, "Resting, " * full_time_label)
+            push!(e_labels, "Excited, " * full_time_label)
         else
-            if isapprox(f * control.t[i] / 2π, 2.0, atol=1e-2)
-                push!(c_labels, @sprintf("\$ t = %d \\times 2\\pi/f\$", f * control.t[i] / 2π))
-            else
-                push!(c_labels, @sprintf("\$ t = %.2f \\times 2\\pi/f\$", f * control.t[i] / 2π))
-            end
+            push!(c_labels, "No waves, " * late_time_label)
+            push!(r_labels, "Resting, " * late_time_label)
+            push!(e_labels, "Excited, " * late_time_label)
         end
-
-        push!(r_labels, "Equilibrated")
-        push!(e_labels, "Excited")
     end
 
     for (j, i) in enumerate(iters)
@@ -91,19 +102,19 @@ function plot_initial_condition_study_profiles(wave_amplitude, suffix)
     end
 
     sca(axs[1])
-    xlabel(L"\bar b \, (\mathrm{m \, s^{-2}})")
-    ylabel("\$ z \$ (m)")
+    xlabel(L"\langle b \rangle \, \, (\mathrm{m \, s^{-2}})")
+    ylabel("\$ z \$ (m)", labelpad=12.0)
 
     sca(axs[2])
-    xlabel(L"\partial_z \bar b \, (\mathrm{s^{-2}})")
+    xlabel(L"\partial_z \langle b \rangle \, \, (\mathrm{s^{-2}})")
 
     sca(axs[3])
-    xlabel(L"\bar u \, (\mathrm{m \, s^{-1}})")
-    legend(loc=3, prop=Dict("size" => 12), bbox_to_anchor=(0.3, 0., 1.0, 0.5))
+    xlabel(L"\langle u^\mathrm{L} \rangle \, \, (\mathrm{m \, s^{-1}})")
+    legend(loc=3, prop=Dict("size" => 12), bbox_to_anchor=(0.3, 0., 1.0, 0.5), frameon=false)
 
     sca(axs[4])
-    xlabel(L"\bar v \, (\mathrm{m \, s^{-1}})")
-    ylabel("\$ z \$ (m)")
+    xlabel(L"\langle v^{\mathrm{L}} \rangle \, \, (\mathrm{m \, s^{-1}})")
+    ylabel("\$ z \$ (m)", labelpad=12.0)
 
     removespines(axs[1], "top", "right")
     removespines(axs[end], "top", "left")
@@ -111,6 +122,11 @@ function plot_initial_condition_study_profiles(wave_amplitude, suffix)
     for j = 2:3
         removespines(axs[j], "top", "right", "left")
         axs[j].tick_params(left=false, labelleft=false)
+    end
+
+    for (ax, lbl) in zip(axs, ("(\\textit{a})", "(\\textit{b})", "(\\textit{c})", "(\\textit{d})"))
+        sca(ax)
+        text(0.05, 1.025, lbl, transform=ax.transAxes, ha="left", va="bottom")
     end
 
     axs[end].yaxis.set_label_position("right")
@@ -137,21 +153,15 @@ function plot_initial_condition_study_profiles(wave_amplitude, suffix)
     xlim(control_averages.b[1, k], control_averages.b[1, end])
     ylim(-depth, 0.1)
 
-    #axs[1].xaxis.set_ticks([-5e-4, -2e-4]) #set_major_formatter(formatter)
+    axs[1].xaxis.set_ticks([-5e-4, -1e-4]) #set_major_formatter(formatter)
 
-    formatter = ScalarFormatter() #useMathText=true)
-    formatter.set_powerlimits((-2, 2))
-    axs[1].xaxis.set_major_formatter(formatter)
+    #formatter = ScalarFormatter() #useMathText=true)
+    #formatter.set_powerlimits((-2, 2))
+    #axs[1].xaxis.set_major_formatter(formatter)
 
-    formatter = ScalarFormatter() #useMathText=true)
-    formatter.set_powerlimits((-2, 2))
-    axs[2].xaxis.set_major_formatter(formatter)
+    #formatter = ScalarFormatter() #useMathText=true)
+    #formatter.set_powerlimits((-2, 2))
+    #axs[2].xaxis.set_major_formatter(formatter)
 
     return axs
 end
-
-axs = plot_initial_condition_study_profiles("1.0x", "Nh256_Nz256")
-savefig(joinpath(@__DIR__, "..", "figures", "figure_7.png"), dpi=480)
-
-axs = plot_initial_condition_study_profiles("4.0x", "Nh256_Nz256")
-savefig(joinpath(@__DIR__, "..", "figures", "figure_8.png"), dpi=480)

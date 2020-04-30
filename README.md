@@ -8,7 +8,7 @@ Currents and turbulence beneath growing surface gravity waves.
 <i> Figure 1: Turbulence and currents transmitted to the ocean during the idealized, forced growth of a surface gravity wave field in the absence of turbulent surface stresses, as modeled by a large eddy simulation. The left panel shows vertical velocity contours normalized by the maximum effective friction velocity, while the right panel shows horizontally-averaged currents after 1/8th an inertial period and after a full inertial period. The initial boundary layer depth is around 8 meters.</i>
 </p>
 
-![vertical_velocity](figures/figure_4.png)
+![vertical_velocity](figures/figure_6.png)
 
 <p align="center">
 <i> Figure 3: Vertical velocity contours in simulations of ocean surface boundary layer turbulence driven by wind both without waves (left) and beneath steady waves (center and right). The center panel reproduces results from McWilliams et al., "Langmuir Turbulence in the Ocean," JFM (1997).</i>

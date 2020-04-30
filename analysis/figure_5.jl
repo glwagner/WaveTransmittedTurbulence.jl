@@ -8,7 +8,7 @@ fs = 16
 plt.rc("font"; family="serif", serif=["Computer Modern Roman"], size=fs)
 plt.rc("text", usetex=true)
 
-function plot_w_slice!(ax, depth, path, i)
+function plot_w_slice!(ax, depth, path, i; plot_title=nothing, pad=0)
 
     iter = get_iters(path)[i]
 
@@ -28,8 +28,6 @@ function plot_w_slice!(ax, depth, path, i)
     wlim = 0.5
     wlevels = vcat([-1], -wlim:2wlim/11:wlim, [1])
 
-    #u = @. sqrt(u^2 + v^2)
-    
     k = searchsortedfirst(grid.zC, -depth)
 
     x, y = meshgrid(grid.xC, grid.yC)
@@ -58,17 +56,22 @@ function plot_w_slice!(ax, depth, path, i)
     skip = 64
     hskip = skip 
 
-    q_z = quiver(grid.Lx/2, grid.Ly/2, mean(u_xy), mean(v_xy),
-                 alpha=0.7, scale=3e0 * max_speed, width=0.02)
+    θ = atan(mean(v_xy) / mean(u_xy))
+    R = 30 # meters
 
-    #q_z = quiver(   x[hskip:skip:end-hskip, hskip:skip:end-hskip],    y[hskip:skip:end-hskip, hskip:skip:end-hskip], 
-    #             u_xy[hskip:skip:end-hskip, hskip:skip:end-hskip], v_xy[hskip:skip:end-hskip, hskip:skip:end-hskip],
-    #             alpha=0.8, scale=5e0 * max_speed)
+    xc = grid.Lx/2
+    yc = grid.Ly/2
 
-    text(0.05, 0.07, @sprintf("\$ t = %.2f \\times 2\\pi / f\$", f * t / 2π),
-         transform=ax.transAxes, fontsize=fs,
-         bbox=Dict(:alpha=>0.9, :facecolor=>"w", :edgecolor=>"w"))
+    x1 = xc - R/2 * cos(θ)
+    y1 = yc - R/2 * sin(θ)
+
+    width = 5
+    arrow(x1, y1, R * cos(θ), R * sin(θ), width=width, head_length=2width, alpha=0.6, facecolor="k", edgecolor="None")
     
+    if plot_title != nothing
+        title(plot_title, pad=pad)
+    end
+
     return w_im
 end
 
@@ -118,38 +121,45 @@ function plot_w_spectra!(ax, depth, path, i)
 end
 
 close("all")
-fig, axs = subplots(nrows=2, ncols=6, figsize=(23, 9))
+fig, axs = subplots(nrows=2, ncols=6, figsize=(16, 6))
  
-name = "surface_stress_with_waves_Qb5.0e-10_Nsq1.0e-06_init0.5_a2.0_k6.3e-02_T4.0_Nh256_Nz256"
+name = "surface_stress_with_steady_waves_Qb5.0e-10_Nsq1.0e-06_f1.0e-04_dom1.5_init0.5_a2.0_k6.3e-02_T4.0_Nh256_Nz384"
 directory = joinpath(@__DIR__, "..", "data", name)
 
 paths = [
          joinpath(directory, name * "_fields_part1.jld2"),
-         joinpath(directory, name * "_fields_part1.jld2"),
-         joinpath(directory, name * "_fields_part2.jld2"),
          joinpath(directory, name * "_fields_part2.jld2"),
          joinpath(directory, name * "_fields_part2.jld2"),
          joinpath(directory, name * "_fields_part3.jld2"),
-         #joinpath(directory, name * "_fields_part3.jld2"),
-         #joinpath(directory, name * "_fields_part3.jld2"),
+         joinpath(directory, name * "_fields_part3.jld2"),
+         joinpath(directory, name * "_fields_part4.jld2"),
         ]
 
 ii = [
       2,
-      3,
+      1,
+      2, 
       1, 
       2, 
-      3, 
       1,
-      #2,
-      #3,
      ]
 
 depth = 4
 
+titles = [
+          "\$ t = \\frac{1}{4} \\times 2\\pi/f \$",
+          "\$ t = \\frac{1}{2} \\times 2\\pi/f \$",
+          "\$ t = \\frac{3}{4} \\times 2\\pi/f \$",
+          "\$ t = 2\\pi/f \$",
+          "\$ t = \\frac{5}{4} \\times 2\\pi/f \$",
+          "\$ t = \\frac{3}{2} \\times 2\\pi/f \$",
+         ]
+
+pads = [8, 8, 8, 14, 8, 8]
+        
 for (j, (i, path)) in enumerate(zip(ii, paths))
     ax = axs[1, j]
-    w_im = plot_w_slice!(ax, 2, path, i)
+    w_im = plot_w_slice!(ax, 2, path, i, plot_title=titles[j], pad=pads[j])
 
     ax = axs[2, j]
     w_im = plot_w_slice!(ax, 8, path, i)
@@ -172,26 +182,18 @@ end
 
 for i = 1:size(axs, 1)
     for j = 1:size(axs, 2)
-        #shift_left!(axs[i, j], 0.01)
-        # stretch_x!(axs[i, j], 0.02)
-        # stretch_y!(axs[i, j], 0.02)
         removespines(axs[i, j], "top", "bottom", "left", "right")
     end
 end
 
 for j = 1:size(axs, 2)
-    shift_down!(axs[1, j], 0.06)
-    shift_up!(axs[2, j], 0.06)
-end
-
-for i = 1:size(axs, 1), j = 1:size(axs, 2)
-    axs[i, j].set_aspect(1)
-end
-
-for i = 1:size(axs, 1)
-    for j = 2:size(axs, 2)
-        shift_left!(axs[i, j], 0.015 * (j-1))
+    for i = 1:size(axs, 1)
+        shift_left!(axs[i, j], 0.08)
+        stretch_y!(axs[i, j], 0.03)
+        stretch_x!(axs[i, j], 0.03)
+        j > 1 && shift_right!(axs[i, j], (j-1) * 0.013)
     end
+    shift_up!(axs[1, j], 0.015)
 end
 
 δ = 0.05
@@ -205,7 +207,4 @@ for (i, depth) = zip((1, 2), (2, 8))
          fontsize=fs, va="center", ha="left")
 end
 
-savefig(joinpath(@__DIR__, "..", "figures", "langmuir_rotation.png"), dpi=480)
-
-#cb = colorbar(w_im, ax=axs, aspect=20, pad=0.10, shrink=0.8, ticks=-0.5:0.1:0.5)
-#cb.ax.set_title(L"w^\mathrm{L} / \max | w^\mathrm{L} |", pad=12.0)
+savefig(joinpath(@__DIR__, "..", "figures", "figure_5.png"), dpi=480)

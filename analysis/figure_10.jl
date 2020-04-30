@@ -85,19 +85,19 @@ plot(excited_averages.U[i, :], grid.zC / z_e, color=c_color, linewidth=lw₁, al
 ylim(-1.5, 0)
 
 sca(axs[1])
-xlabel(L"\langle u^\mathrm{E} \rangle = \langle u^\mathrm{L} \rangle - u^\mathrm{S} \, \, (\mathrm{m \, s^{-1}})")
+xlabel(L"\langle u^\mathrm{E} \rangle = \langle u^\mathrm{L} \rangle - u^\mathrm{S} \, \, (\mathrm{m \, s^{-1}})", labelpad=8.0)
 ylabel("\$ z / h \$")
 legend(frameon=false, loc="lower right", markerfirst=false, bbox_to_anchor=(0.4, 0.01, 1.0, 1.0))
 
 sca(axs[2])
-xlabel(L"\langle v^\mathrm{L} \rangle = \langle v^\mathrm{E} \rangle \, \, (\mathrm{m \, s^{-1}})")
+xlabel(L"\langle v^\mathrm{L} \rangle = \langle v^\mathrm{E} \rangle \, \, (\mathrm{m \, s^{-1}})", labelpad=8.0)
 legend(loc=3, prop=Dict("size" => 12), bbox_to_anchor=(0.3, 0., 1.0, 0.5), frameon=false)
 
 sca(axs[3])
-xlabel(L"\langle \left ( w^{\mathrm{L}} \right )^2 \rangle \, \, (\mathrm{m^2 \, s^{-2}})")
+xlabel(L"\left \langle \left ( w^{\mathrm{L}} \right )^2 \right \rangle \, \, (\mathrm{m^2 \, s^{-2}})")
 
 sca(axs[4])
-xlabel(L"\langle u^\mathrm{L} \rangle \, \, (\mathrm{m \, s^{-1}})")
+xlabel(L"\langle u^\mathrm{L} \rangle \, \, (\mathrm{m \, s^{-1}})", labelpad=8.0)
 ylabel("\$ z / h\$")
 
 for (ax, lbl) in zip(axs, ("(\\textit{a})", "(\\textit{b})", "(\\textit{c})", "(\\textit{d})"))
@@ -119,7 +119,8 @@ axs[end].set_zorder(-1)
 
 for (i, ax) in enumerate(axs)
     stretch_x!(ax, -0.01)
-    shift_up!(ax, 0.04)
+    stretch_y!(ax, -0.05)
+    shift_up!(ax, 0.07)
     shift_left!(ax, 0.03)
     shift_right!(ax, 0.015 * (i-1))
 end

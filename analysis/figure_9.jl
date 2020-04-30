@@ -8,7 +8,7 @@ axes_grid1 = pyimport("mpl_toolkits.axes_grid1")
 make_axes_locatable = axes_grid1.make_axes_locatable
 mplot3d = pyimport("mpl_toolkits.mplot3d")
 
-wave_amplitude = "1.0x"
+wave_amplitude = "2.0x"
 suffix = "Nh256_Nz256"
 
 resting_name = "initial_condition_study_resting_" * wave_amplitude * "_" * suffix
@@ -25,13 +25,13 @@ grid = get_grid(resting_path)
 iters_r = get_iters(resting_path)
 iters_e = get_iters(excited_path)
 
-t_r, u_r, v_r, w_r, b_r = get_fields(resting_path, iters_r[3])
-t_e, u_e, v_e, w_e, b_e = get_fields(excited_path, iters_e[3])
+t_r, u_r, v_r, w_r, b_r = get_fields(resting_path, iters_r[2])
+t_e, u_e, v_e, w_e, b_e = get_fields(excited_path, iters_e[2])
 
 @show t_r * f / 2π
 @show t_e * f / 2π
 
-wlim = 5
+wlim = 4
 wlevels = vcat([-2wlim], -wlim:2wlim/11:wlim, [2wlim])
 
 view_elev = 45
@@ -77,7 +77,7 @@ im_wxy_e = ax_e.contourf(XC_z, YC_z, w_xy_e / u★, zdir="z", levels=wlevels, of
 ax_r.view_init(elev=view_elev, azim=-135)
 ax_e.view_init(elev=view_elev, azim=-135)
 
-cb = colorbar(im_wyz_r, ax=[ax_r, ax_e], ticks=-wlim:2wlim/5:wlim)
+cb = colorbar(im_wyz_r, ax=[ax_r, ax_e], ticks=-wlim:2wlim/4:wlim)
 cb.ax.set_title(L"w / u_\star", pad=12.0)
 
 ax_r.set_zlim(-bottom, 0)

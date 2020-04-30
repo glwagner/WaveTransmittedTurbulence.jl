@@ -35,10 +35,10 @@ function plot_initial_condition_study_profiles(wave_amplitude, suffix)
     α₁ = 0.6
     α₂ = 1.0
 
-    lw₂ = 2.5
-    lw₁ = 1.5
+    lw₁ = 2.5
+    lw₂ = 1.5
 
-    depth = 36
+    depth = 48
 
     k = searchsortedfirst(grid.zF, -depth)
 
@@ -56,7 +56,7 @@ function plot_initial_condition_study_profiles(wave_amplitude, suffix)
         @show control_averages.t[i] / hour control_averages.t[i] * 1e-4 / 2π
 
         quarter_time_label = "\$ t = \\frac{1}{4} \\times 2\\pi/f\$"
-        full_time_label = "\$ t = 2\\pi/f\$"
+        full_time_label = "\$ t = 2 \\times 2\\pi/f\$"
         late_time_label = @sprintf("\$ t = %.2f \\times 2\\pi/f\$", f * control_averages.t[i] / 2π)
 
         if isapprox(f * control_averages.t[i] / 2π, 0.25, atol=1e-2)
@@ -80,46 +80,45 @@ function plot_initial_condition_study_profiles(wave_amplitude, suffix)
         e_label = e_labels[j]
 
         sca(axs[1])
-        plot(control_averages.b[i, :], grid.zC, color=defaultcolors[j], linewidth=lw₂, alpha=α₁, "-")  
-        plot(resting_averages.b[i, :], grid.zC, color=defaultcolors[j], linewidth=lw₁, alpha=α₂, "--")
-        plot(excited_averages.b[i, :], grid.zC, color=defaultcolors[j], linewidth=lw₁, alpha=α₂, ":") 
+        plot(control_averages.b[i, :], grid.zC, color=defaultcolors[j], linewidth=lw₂, alpha=α₂, ":")  
+        plot(resting_averages.b[i, :], grid.zC, color=defaultcolors[j], linewidth=lw₁, alpha=α₁, "-")
+        plot(excited_averages.b[i, :], grid.zC, color=defaultcolors[j], linewidth=lw₂, alpha=α₂, "--") 
 
         sca(axs[2])
-        plot(control_averages.bz[i, 2:end-1], grid.zF[2:end-1], color=defaultcolors[j], linewidth=lw₂, alpha=α₁, "-")
-        plot(resting_averages.bz[i, 2:end-1], grid.zF[2:end-1], color=defaultcolors[j], linewidth=lw₁, alpha=α₂, "--")
-        plot(excited_averages.bz[i, 2:end-1], grid.zF[2:end-1], color=defaultcolors[j], linewidth=lw₁, alpha=α₂, ":")
+        plot(control_averages.bz[i, 2:end-1], grid.zF[2:end-1], color=defaultcolors[j], linewidth=lw₂, alpha=α₂, ":")  
+        plot(resting_averages.bz[i, 2:end-1], grid.zF[2:end-1], color=defaultcolors[j], linewidth=lw₁, alpha=α₁, "-")
+        plot(excited_averages.bz[i, 2:end-1], grid.zF[2:end-1], color=defaultcolors[j], linewidth=lw₂, alpha=α₂, "--") 
 
         sca(axs[3])
-        plot(control_averages.U[i, :], grid.zC, color=defaultcolors[j], linewidth=lw₂, alpha=α₁, label=c_labels[j], "-")
-        plot(resting_averages.U[i, :], grid.zC, color=defaultcolors[j], linewidth=lw₁, alpha=α₂, label=r_label, "--")
-        plot(excited_averages.U[i, :], grid.zC, color=defaultcolors[j], linewidth=lw₁, alpha=α₂, label=e_label, ":")
+        plot(control_averages.S[i, :], grid.zC, color=defaultcolors[j], linewidth=lw₂, alpha=α₂, ":")  
+        plot(resting_averages.S[i, :], grid.zC, color=defaultcolors[j], linewidth=lw₁, alpha=α₁, "-")
+        plot(excited_averages.S[i, :], grid.zC, color=defaultcolors[j], linewidth=lw₂, alpha=α₂, "--") 
 
         sca(axs[4])
-        plot(control_averages.V[i, :], grid.zC, color=defaultcolors[j], linewidth=lw₂, alpha=α₁, "-")
-        plot(resting_averages.V[i, :], grid.zC, color=defaultcolors[j], linewidth=lw₁, alpha=α₂, "--")
-        plot(excited_averages.V[i, :], grid.zC, color=defaultcolors[j], linewidth=lw₁, alpha=α₂, ":")
+        plot(control_averages.W²[i, :], grid.zF, color=defaultcolors[j], label=c_labels[j], linewidth=lw₂, alpha=α₁, ":")
+        plot(resting_averages.W²[i, :], grid.zF, color=defaultcolors[j], label=r_label,     linewidth=lw₁, alpha=α₁, "-")
+        plot(excited_averages.W²[i, :], grid.zF, color=defaultcolors[j], label=e_label,     linewidth=lw₂, alpha=α₂, "--") 
 
     end
 
     sca(axs[1])
-    xlabel(L"\langle b \rangle \, \, (\mathrm{m \, s^{-2}})")
-    ylabel("\$ z \$ (m)", labelpad=12.0)
+    xlabel(L"\langle b \rangle \, \, (\mathrm{m \, s^{-2}})", labelpad=10.0)
+    ylabel("\$ z \$ (m)", labelpad=8.0)
 
     sca(axs[2])
-    xlabel(L"\partial_z \langle b \rangle \, \, (\mathrm{s^{-2}})")
+    xlabel(L"\partial_z \langle b \rangle \, \, (\mathrm{s^{-2}})", labelpad=10.0)
 
     sca(axs[3])
-    xlabel(L"\langle u^\mathrm{L} \rangle \, \, (\mathrm{m \, s^{-1}})")
-    legend(loc=3, prop=Dict("size" => 12), bbox_to_anchor=(0.3, 0., 1.0, 0.5), frameon=false)
+    xlabel(L"\sqrt{ \left \langle u^\mathrm{L} \right \rangle^2 + \left \langle v^\mathrm{L} \right \rangle^2} \, \, (\mathrm{m \, s^{-1}})")
 
     sca(axs[4])
-    xlabel(L"\langle v^{\mathrm{L}} \rangle \, \, (\mathrm{m \, s^{-1}})")
-    ylabel("\$ z \$ (m)", labelpad=12.0)
+    xlabel(L"\left \langle \left ( w^\mathrm{L} \right )^2 \right \rangle \, \, (\mathrm{m^2 \, s^{-2}})")
+    legend(loc="lower left", prop=Dict("size" => 12), bbox_to_anchor=(0.27, 0., 1.0, 0.5), frameon=false)
 
     removespines(axs[1], "top", "right")
     removespines(axs[end], "top", "left")
 
-    for j = 2:3
+    for j = 2:4
         removespines(axs[j], "top", "right", "left")
         axs[j].tick_params(left=false, labelleft=false)
     end
@@ -128,10 +127,6 @@ function plot_initial_condition_study_profiles(wave_amplitude, suffix)
         sca(ax)
         text(0.05, 1.025, lbl, transform=ax.transAxes, ha="left", va="bottom")
     end
-
-    axs[end].yaxis.set_label_position("right")
-    axs[end].tick_params(left=false, labelleft=false, right=true, labelright=true)
-    axs[end].set_zorder(-1)
 
     positions = [get_position(ax) for ax in axs]
 
@@ -153,15 +148,15 @@ function plot_initial_condition_study_profiles(wave_amplitude, suffix)
     xlim(control_averages.b[1, k], control_averages.b[1, end])
     ylim(-depth, 0.1)
 
-    axs[1].xaxis.set_ticks([-5e-4, -1e-4]) #set_major_formatter(formatter)
+    xlim(-7e-4, 0.0)
+    axs[1].xaxis.set_ticks([-5e-4, 0.0])
 
-    #formatter = ScalarFormatter() #useMathText=true)
-    #formatter.set_powerlimits((-2, 2))
-    #axs[1].xaxis.set_major_formatter(formatter)
-
-    #formatter = ScalarFormatter() #useMathText=true)
-    #formatter.set_powerlimits((-2, 2))
-    #axs[2].xaxis.set_major_formatter(formatter)
+    for ax in axs
+        stretch_y!(ax, -0.05)
+        stretch_x!(ax, -0.02)
+        shift_left!(ax, 0.015)
+        shift_up!(ax, 0.02)
+    end
 
     return axs
 end

@@ -11,7 +11,7 @@ Currents and turbulence beneath growing surface gravity waves.
 ![vertical_velocity](figures/figure_6.png)
 
 <p align="center">
-<i> Figure 3: Vertical velocity contours in simulations of ocean surface boundary layer turbulence driven by wind both without waves (left) and beneath steady waves (center and right). The center panel reproduces results from McWilliams et al., "Langmuir Turbulence in the Ocean," JFM (1997).</i>
+<i> Figure 6: Vertical velocity contours in simulations of ocean surface boundary layer turbulence driven by wind both without waves (left) and beneath steady waves (center and right). The center panel reproduces results from McWilliams et al., "Langmuir Turbulence in the Ocean," JFM (1997).</i>
 </p>
 
 This repository contains [Julia](https://julialang.org) code for reproducing the simulation data and plots in 

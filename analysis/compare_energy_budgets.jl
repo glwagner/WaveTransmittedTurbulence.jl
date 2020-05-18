@@ -18,7 +18,7 @@ end
 
 integrate_profile_timeseries(profile, grid) = dropdims(mean(profile, dims=2), dims=2)
 
-function plot_volume_budget!(axs, name; kwargs...)
+function plot_volume_budget!(axs, name; ∂t_uˢ=nothing, τ=nothing, kwargs...)
 
     path = path_from_name(name)
 
@@ -36,29 +36,47 @@ function plot_volume_budget!(axs, name; kwargs...)
     υ = integrate_profile_timeseries(averages.W², grid) ./ 2
     P = integrate_profile_timeseries(production, grid)
 
-    sca(axs[2])
     U = integrate_profile_timeseries(averages.U, grid)
     V = integrate_profile_timeseries(averages.V, grid)
+
+    power = nothing
+
+    if τ != nothing
+        power = @. τ(averages.t) * averages.U[:, end]
+    elseif ∂t_uˢ != nothing
+        t = reshape(averages.t, length(averages.t), 1)
+        zC = reshape(grid.zC, 1, grid.Nz)
+        depth_distributed_power = @. ∂t_uˢ(zC, t) * averages.U
+        power = grid.Lz .* integrate_profile_timeseries(depth_distributed_power, grid)
+    else
+        power = zeros(length(averages.t))
+    end
+
+    sca(axs[2])
     plot(averages.t / hour, U, "k--", alpha=0.6, linewidth=1.5)
     plot(averages.t / hour, V, "k:", alpha=0.6, linewidth=1.5)
     xticks(0:4:32)
 
     sca(axs[3])
-    plot(averages.t / hour, ℰ .+ E,  "-"; kwargs...)
+    plot(averages.t / hour, power, "-"; kwargs...)
     xticks(0:4:32)
 
     sca(axs[4])
-    plot(averages.t / hour, E, "--"; kwargs...)
+    plot(averages.t / hour, ℰ,  "-"; kwargs...)
     xticks(0:4:32)
 
     sca(axs[5])
+    plot(averages.t / hour, E, "--"; kwargs...)
+    xticks(0:4:32)
+
+    sca(axs[6])
     plot(averages.t / hour, P, "-"; kwargs...)
     xticks(0:4:32)
 
     return nothing
 end
 
-suffix = "Qb5.0e-10_Nsq1.0e-06_init0.5_a2.0_k6.3e-02_T4.0_Nh256_Nz256"
+suffix = "Qb5.0e-10_Nsq1.0e-06_f1.0e-04_dom1.5_init0.5_a2.0_k6.3e-02_T4.0_Nh256_Nz384"
 name = "growing_waves_" * suffix
 path = path_from_name(name)
 
@@ -78,19 +96,18 @@ V = integrate_profile_timeseries(averages.V, grid)
 # Effective stress
 τʷ = wave_amplitude^2 * √(g_Earth * wavenumber) / (2 * growth_time_scale)
 τ(t) = τʷ * t / growth_time_scale * exp(-t^2 / (2*growth_time_scale^2))
+∂t_uˢ(z, t) = exp(2 * wavenumber * z) * wave_amplitude^2 * wavenumber * √(g_Earth * wavenumber) * t / growth_time_scale^2 * exp(-t^2 / (2*growth_time_scale^2))
 
 close("all")
-fig, axs = subplots(nrows=5, sharex=true, figsize=(8, 10))
-
-suffix = "Qb5.0e-10_Nsq1.0e-06_init0.5_a2.0_k6.3e-02_T4.0_Nh256_Nz256"
+fig, axs = subplots(nrows=6, sharex=true, figsize=(8, 10))
 
 sca(axs[1])
 plot(averages.t / hour, τ.(averages.t), "-")
 xticks(0:4:32)
 
-plot_volume_budget!(axs, "growing_waves_" * suffix,             label="Growing waves")
-plot_volume_budget!(axs, "surface_stress_with_waves_" * suffix, label="Surface stress, steady waves")
-plot_volume_budget!(axs, "surface_stress_no_waves_" * suffix,   label="Surface stress, no waves")
+plot_volume_budget!(axs, "growing_waves_" * suffix,                    ∂t_uˢ=∂t_uˢ, color=defaultcolors[1], label="Growing waves")
+plot_volume_budget!(axs, "surface_stress_with_steady_waves_" * suffix, τ=τ,         color=defaultcolors[2], label="Surface stress, steady waves")
+plot_volume_budget!(axs, "surface_stress_no_waves_" * suffix,          τ=τ,         color=defaultcolors[3], label="Surface stress, no waves")
 
 removespines(axs[1], "right")
 removespines(axs[2], "top", "right")
@@ -109,32 +126,20 @@ sca(axs[2])
 ylabel(L"\left \langle u_i \right \rangle \,  \, \mathrm{(m \, s^{-1})}")
 
 sca(axs[3])
-ylabel(L"\left \langle \frac{1}{2} u_i^2 \right \rangle \,  \, \mathrm{(m^2 \, s^{-2})}")
+ylabel("power")
 
 sca(axs[4])
+ylabel(L"\frac{1}{2} \left \langle u_i \right \rangle^2 \,  \, \mathrm{(m^2 \, s^{-2})}")
+
+sca(axs[5])
 ylabel(L"\left \langle \frac{1}{2} u_i'^2 \right \rangle \,  \, \mathrm{(m^2 \, s^{-2})}")
 legend(bbox_to_anchor=(0.5, 0.25, 1.0, 1.0), loc=2, frameon=false)
 
-sca(axs[5])
-ylabel(L"-H^{-1} \int \overline{w'u_i'} \partial_z U_i \, \mathrm{d} z") # \,  \, \mathrm{(m^2 \, s^{-3})}")
+sca(axs[6])
+ylabel(L"-\left \langle \overline{w'u_i'} \partial_z U_i \right \rangle") # \,  \, \mathrm{(m^2 \, s^{-3})}")
 xlabel("time (hours)")
 
 xlim(-1, 32)
-#tight_layout()
-
-function shift_right!(ax, shift=0.01)
-    pos = get_position(ax)
-    pos[1] += shift
-    ax.set_position(pos)
-    return nothing
-end
-
-function shift_up!(ax, shift=0.01)
-    pos = get_position(ax)
-    pos[2] += shift
-    ax.set_position(pos)
-    return nothing
-end
 
 for (i, ax) in enumerate(axs)
     shift_right!(ax, 0.05)

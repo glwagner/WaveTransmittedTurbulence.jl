@@ -54,15 +54,14 @@ end
 close("all")
 fig, axs = subplots(nrows=3, ncols=2, figsize=(15, 9), sharex=true)
 
-#suffix = "Qb5.0e-10_Nsq1.0e-06_init0.5_a2.0_k6.3e-02_T4.0_Nh256_Nz256"
-suffix = "Qb5.0e-10_Nsq1.0e-06_f1.0e-04_dom1.5_init0.5_a2.0_k6.3e-02_T4.0_Nh256_Nz256"
+suffix = "Qb5.0e-10_Nsq1.0e-06_f1.0e-04_dom1.5_init0.5_a2.0_k6.3e-02_T4.0_Nh256_Nz384"
 
 #####
 ##### Right side: surface stress with steady waves
 #####
 
 velocity_limit, energy_limit, velocity_contours, energy_contours =
-    plot_depth_time!(axs[2:3, 2], "surface_stress_with_waves_" * suffix, velocity_saturation=0.6, energy_saturation=0.5)
+    plot_depth_time!(axs[2:3, 2], "surface_stress_with_steady_waves_" * suffix, velocity_saturation=0.6, energy_saturation=0.5)
 
 dtick = velocity_limit / 2
 velocity_ticks = -2 * dtick : dtick : dtick * 2
@@ -210,5 +209,4 @@ for cb in (velocity_cb, energy_cb)
     shift_up!(cb.ax, 0.04)
 end
 
-
-savefig(joinpath(@__DIR__, "..", "figures", "figure_4_bigger_domain.png"), dpi=480)
+savefig(joinpath(@__DIR__, "..", "figures", "figure_4.png"), dpi=480)

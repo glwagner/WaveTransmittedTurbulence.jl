@@ -1,6 +1,6 @@
 # WaveTransmittedTurbulence
 
-Currents and turbulence beneath growing surface gravity waves.
+Near-inertial waves and turbulence driven by the growth of surface gravity waves
 
 ![wave-driven-turbulence](figures/figure_1.png)
 
